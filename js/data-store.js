@@ -73,7 +73,11 @@
 
     function widgetRoot(fieldName) {
       const selectorName = String(fieldName).replaceAll('_', '-');
-      return document.querySelector('[data-drupal-selector="edit-' + selectorName + '"]');
+      return (
+        document.querySelector('[data-drupal-selector="edit-' + selectorName + '-wrapper"]') ||
+        document.querySelector('[data-drupal-selector="edit-' + selectorName + '"]') ||
+        document.querySelector('[data-drupal-selector^="edit-' + selectorName + '-"]')
+      );
     }
 
     function setNativeValue(input, value) {

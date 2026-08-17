@@ -66,3 +66,14 @@ function gutenberg_next_schema(): array {
     ],
   ];
 }
+
+/**
+ * Creates the autosave snapshot table for existing installations.
+ */
+function gutenberg_next_update_20001(): void {
+  $schema = \Drupal::database()->schema();
+  $table_spec = gutenberg_next_schema()['gutenberg_next_field_autosave'];
+  if (!$schema->tableExists('gutenberg_next_field_autosave')) {
+    $schema->createTable('gutenberg_next_field_autosave', $table_spec);
+  }
+}

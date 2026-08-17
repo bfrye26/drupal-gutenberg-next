@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\gutenberg_next\Bridge;
 
 use Drupal\Core\Entity\ContentEntityInterface;
-use Drupal\Core\Entity\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
 
 /**
  * Normalizes Drupal field values into a stable JSON shape for the editor.

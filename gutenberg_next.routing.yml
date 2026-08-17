@@ -13,3 +13,41 @@ gutenberg_next.status:
     _title: 'Gutenberg Next status'
   requirements:
     _permission: 'administer gutenberg next'
+
+gutenberg_next.field_autosave.save:
+  path: '/editor/gutenberg-next/autosave/{entity_type}/{entity_id}'
+  defaults:
+    _controller: '\Drupal\gutenberg_next\Controller\FieldAutosaveController::save'
+    _format: 'json'
+  methods: [POST]
+  requirements:
+    _permission: 'use gutenberg'
+    _csrf_request_header_token: 'TRUE'
+    entity_type: 'node'
+  options:
+    no_cache: TRUE
+
+gutenberg_next.field_autosave.load:
+  path: '/editor/gutenberg-next/autosave/{entity_type}/{entity_id}'
+  defaults:
+    _controller: '\Drupal\gutenberg_next\Controller\FieldAutosaveController::load'
+    _format: 'json'
+  methods: [GET]
+  requirements:
+    _permission: 'use gutenberg'
+    entity_type: 'node'
+  options:
+    no_cache: TRUE
+
+gutenberg_next.field_autosave.clear:
+  path: '/editor/gutenberg-next/autosave/{entity_type}/{entity_id}'
+  defaults:
+    _controller: '\Drupal\gutenberg_next\Controller\FieldAutosaveController::clear'
+    _format: 'json'
+  methods: [DELETE]
+  requirements:
+    _permission: 'use gutenberg'
+    _csrf_request_header_token: 'TRUE'
+    entity_type: 'node'
+  options:
+    no_cache: TRUE

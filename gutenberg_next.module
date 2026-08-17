@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Entity\ContentEntityFormInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Site\Settings;
 
@@ -118,4 +119,27 @@ function gutenberg_next_entity_autocomplete_url(\Drupal\Core\Entity\ContentEntit
     'selection_handler' => $handler,
     'selection_settings_key' => $key,
   ])->toString();
+}
+
+/**
+ * Implements hook_cron().
+ */
+function gutenberg_next_cron(): void {
+  \Drupal::database()->delete('gutenberg_next_field_autosave')
+    ->condition('changed', \Drupal::time()->getRequestTime() - 86400 * 30, '<')
+    ->execute();
+}
+
+/**
+ * Implements hook_entity_delete().
+ */
+function gutenberg_next_entity_delete(EntityInterface $entity): void {
+  $id = $entity->id();
+  if ($id === NULL || !is_numeric($id)) {
+    return;
+  }
+  \Drupal::database()->delete('gutenberg_next_field_autosave')
+    ->condition('entity_type', $entity->getEntityTypeId())
+    ->condition('entity_id', (int) $id)
+    ->execute();
 }

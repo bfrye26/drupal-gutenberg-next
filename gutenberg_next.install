@@ -1,0 +1,68 @@
+<?php
+
+declare(strict_types=1);
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * @file
+ * Install hooks for Gutenberg Next.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function gutenberg_next_schema(): array {
+  return [
+    'gutenberg_next_field_autosave' => [
+      'description' => 'Per-user editor autosave snapshots of Drupal field values.',
+      'fields' => [
+        'id' => [
+          'type' => 'serial',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ],
+        'uid' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+          'default' => 0,
+        ],
+        'entity_type' => [
+          'type' => 'varchar_ascii',
+          'length' => 32,
+          'not null' => TRUE,
+        ],
+        'entity_id' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ],
+        'bundle' => [
+          'type' => 'varchar_ascii',
+          'length' => 128,
+          'not null' => TRUE,
+          'default' => '',
+        ],
+        'data' => [
+          'type' => 'text',
+          'size' => 'big',
+          'not null' => TRUE,
+        ],
+        'changed' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+          'default' => 0,
+        ],
+      ],
+      'primary key' => ['id'],
+      'unique keys' => [
+        'autosave_owner' => ['uid', 'entity_type', 'entity_id'],
+      ],
+      'indexes' => [
+        'autosave_changed' => ['changed'],
+      ],
+    ],
+  ];
+}

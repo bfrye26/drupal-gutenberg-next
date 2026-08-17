@@ -37,3 +37,4 @@ The first browser validation should be performed on Drupal 11 with Drupal Gutenb
 5. Save; edit; reload; confirm no stale autosave restore happens.
 6. Multi-value entity reference: search "autosave" in the token field; select; save; values persisted.
 7. Required field: clear it, submit; confirm the server error message surfaces in the panel.
+8. Submit immediately after a rapid edit; if a stale autosave restore notice appears later, the snapshot raced the save — deleting the stale snapshot (edit once more and save) resolves it.

@@ -326,7 +326,7 @@ Environment: `http://drupal-test-2.test:8080/`
 
 - All six roadmap items implemented and checked in ROADMAP.md.
 - Version 0.2.0-alpha1 bumped everywhere.
-- Kernel test + smoke checks pass on the local demo site.
+- Standalone checks + smoke checks pass on the local demo site.
 - CI green on GitHub; work pushed to `main`.
 
 Out of scope for 0.2 (explicit): REST-native entity saves, realtime

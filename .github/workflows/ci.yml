@@ -25,3 +25,5 @@ jobs:
         run: composer validate --no-check-publish --no-check-lock
       - name: Field catalog self-check
         run: php tests/check-field-catalog.php
+      - name: Field serializer self-check
+        run: php tests/check-field-serializer.php

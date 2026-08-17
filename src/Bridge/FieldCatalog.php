@@ -13,9 +13,6 @@ use Drupal\Core\Entity\EntityFieldManagerInterface;
  */
 final class FieldCatalog {
 
-  /**
-   * Field names that are implementation details rather than editorial fields.
-   */
   private const INTERNAL_FIELDS = [
     'uuid',
     'vid',
@@ -31,9 +28,27 @@ final class FieldCatalog {
     'content_translation_created',
   ];
 
+  private const KIND_MAP = [
+    'string' => 'text',
+    'text' => 'text',
+    'text_long' => 'text',
+    'text_with_summary' => 'text',
+    'integer' => 'number',
+    'decimal' => 'number',
+    'float' => 'number',
+    'boolean' => 'boolean',
+    'list_string' => 'list',
+    'list_integer' => 'list',
+    'list_float' => 'list',
+    'datetime' => 'datetime',
+    'timestamp' => 'datetime',
+    'entity_reference' => 'entity_reference',
+  ];
+
   public function __construct(
     private readonly EntityFieldManagerInterface $entityFieldManager,
     private readonly EntityDisplayRepositoryInterface $entityDisplayRepository,
+    private readonly FieldValueSerializer $serializer,
   ) {}
 
   /**
@@ -70,18 +85,62 @@ final class FieldCatalog {
         continue;
       }
 
-      $fields[] = [
-        'name' => $name,
-        'label' => (string) $definition->getLabel(),
-        'type' => $definition->getType(),
-        'required' => $definition->isRequired(),
-        'computed' => $definition->isComputed(),
-        'readOnly' => $definition->isReadOnly(),
-      ];
+      $fields[] = $this->buildEntry($entity, $definition, $name);
     }
 
     usort($fields, static fn (array $a, array $b): int => strnatcasecmp($a['label'], $b['label']));
     return $fields;
+  }
+
+  private function buildEntry(ContentEntityInterface $entity, object $definition, string $name): array {
+    $type = (string) $definition->getType();
+    $kind = self::KIND_MAP[$type] ?? 'complex';
+    $storage = method_exists($definition, 'getFieldStorageDefinition')
+      ? $definition->getFieldStorageDefinition()
+      : NULL;
+    $cardinality = $storage ? (int) $storage->getCardinality() : 1;
+    $settings = method_exists($definition, 'getSettings') ? (array) $definition->getSettings() : [];
+
+    $entry = [
+      'name' => $name,
+      'label' => (string) $definition->getLabel(),
+      'type' => $type,
+      'required' => (bool) $definition->isRequired(),
+      'computed' => (bool) $definition->isComputed(),
+      'readOnly' => (bool) $definition->isReadOnly(),
+      'kind' => $kind,
+      'cardinality' => $cardinality,
+      'multiple' => $cardinality !== 1,
+      'value' => $this->serializer->serialize($entity, $definition),
+    ];
+
+    if ($kind === 'text' && isset($settings['max_length'])) {
+      $entry['maxLength'] = (int) $settings['max_length'];
+    }
+    if ($kind === 'number') {
+      if (isset($settings['min'])) {
+        $entry['numberMin'] = (float) $settings['min'];
+      }
+      if (isset($settings['max'])) {
+        $entry['numberMax'] = (float) $settings['max'];
+      }
+    }
+    if ($kind === 'list' && isset($settings['allowed_values'])) {
+      $entry['options'] = $settings['allowed_values'];
+    }
+    if ($kind === 'datetime') {
+      $entry['datetimeStorageFormat'] = ($settings['datetime_type'] ?? 'datetime') === 'datetime'
+        ? 'Y-m-d\TH:i:s'
+        : 'Y-m-d';
+    }
+    if ($kind === 'entity_reference' && $storage) {
+      $target = $storage->getSetting('target_type');
+      if ($target) {
+        $entry['targetType'] = (string) $target;
+      }
+    }
+
+    return $entry;
   }
 
 }

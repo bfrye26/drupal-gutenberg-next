@@ -108,40 +108,36 @@ Expected: both modules enabled; if `use text format gutenberg` doesn't exist, us
 
 - [ ] **Step 4: Create the GNT Article content type + field matrix**
 
+PowerShell quoting rule for every `drush php:eval` below: wrap the PHP snippet in PowerShell single quotes and use double quotes inside the PHP code, e.g.:
+
 ```powershell
-& $php vendor\drush\drush\drush.php php:eval "`$etm = \Drupal::entityTypeManager(); `$type = `$etm->getStorage('node_type')->create(['type' => 'gnt_article', 'name' => 'GNT Article']); `$type->save(); `$sm = \Drupal::service('field_storage_definition'); "
+& $php vendor\drush\drush\drush.php php:eval '$f = \Drupal\field\Entity\FieldStorageConfig::create(["field_name" => "field_subtitle", "entity_type" => "node", "type" => "string"]); $f->save(); \Drupal\field\Entity\FieldConfig::create(["field_name" => "field_subtitle", "entity_type" => "node", "bundle" => "gnt_article", "label" => "Subtitle", "required" => TRUE])->save();'
 ```
 
-then continue with `drush php:eval` snippets (one per field; copy verbatim, one line each):
+Run one such eval per field, using this table (note `$f` is reused; each eval is a fresh PHP process so that's fine):
 
-```php
-$f = \Drupal\field\Entity\FieldStorageConfig::create(['field_name' => 'field_subtitle', 'entity_type' => 'node', 'type' => 'string']); $f->save(); \Drupal\field\Entity\FieldConfig::create(['field_name' => 'field_subtitle', 'entity_type' => 'node', 'bundle' => 'gnt_article', 'label' => 'Subtitle', 'required' => TRUE])->save();
-$f = \Drupal\field\Entity\FieldStorageConfig::create(['field_name' => 'field_notes', 'entity_type' => 'node', 'type' => 'text_long']); $f->save(); \Drupal\field\Entity\FieldConfig::create(['field_name' => 'field_notes', 'entity_type' => 'node', 'bundle' => 'gnt_article', 'label' => 'Notes'])->save();
-$f = \Drupal\field\Entity\FieldStorageConfig::create(['field_name' => 'field_count', 'entity_type' => 'node', 'type' => 'integer']); $f->save(); \Drupal\field\Entity\FieldConfig::create(['field_name' => 'field_count', 'entity_type' => 'node', 'bundle' => 'gnt_article', 'label' => 'Count'])->save();
-$f = \Drupal\field\Entity\FieldStorageConfig::create(['field_name' => 'field_price', 'entity_type' => 'node', 'type' => 'decimal']); $f->save(); \Drupal\field\Entity\FieldConfig::create(['field_name' => 'field_price', 'entity_type' => 'node', 'bundle' => 'gnt_article', 'label' => 'Price'])->save();
-$f = \Drupal\field\Entity\FieldStorageConfig::create(['field_name' => 'field_active', 'entity_type' => 'node', 'type' => 'boolean']); $f->save(); \Drupal\field\Entity\FieldConfig::create(['field_name' => 'field_active', 'entity_type' => 'node', 'bundle' => 'gnt_article', 'label' => 'Active'])->save();
-$f = \Drupal\field\Entity\FieldStorageConfig::create(['field_name' => 'field_topic', 'entity_type' => 'node', 'type' => 'list_string', 'settings' => ['allowed_values' => ['news' => 'News', 'guide' => 'Guide', 'review' => 'Review']]]); $f->save(); \Drupal\field\Entity\FieldConfig::create(['field_name' => 'field_topic', 'entity_type' => 'node', 'bundle' => 'gnt_article', 'label' => 'Topic'])->save();
-$f = \Drupal\field\Entity\FieldStorageConfig::create(['field_name' => 'field_when', 'entity_type' => 'node', 'type' => 'datetime']); $f->save(); \Drupal\field\Entity\FieldConfig::create(['field_name' => 'field_when', 'entity_type' => 'node', 'bundle' => 'gnt_article', 'label' => 'When'])->save();
-$f = \Drupal\field\Entity\FieldStorageConfig::create(['field_name' => 'field_related', 'entity_type' => 'node', 'type' => 'entity_reference', 'settings' => ['target_type' => 'node']]); $f->save(); \Drupal\field\Entity\FieldConfig::create(['field_name' => 'field_related', 'entity_type' => 'node', 'bundle' => 'gnt_article', 'label' => 'Related articles', 'settings' => ['handler' => 'default:node', 'handler_settings' => ['target_bundles' => ['gnt_article']]]])->save();
-$f = \Drupal\field\Entity\FieldStorageConfig::create(['field_name' => 'field_photo', 'entity_type' => 'node', 'type' => 'image']); $f->save(); \Drupal\field\Entity\FieldConfig::create(['field_name' => 'field_photo', 'entity_type' => 'node', 'bundle' => 'gnt_article', 'label' => 'Photo'])->save();
+| field_name | type | label | required | storage settings | field settings |
+|---|---|---|---|---|---|
+| field_subtitle | string | Subtitle | TRUE | — | — |
+| field_notes | text_long | Notes | FALSE | — | — |
+| field_count | integer | Count | FALSE | — | — |
+| field_price | decimal | Price | FALSE | — | — |
+| field_active | boolean | Active | FALSE | — | — |
+| field_topic | list_string | Topic | FALSE | `["allowed_values" => ["news" => "News", "guide" => "Guide", "review" => "Review"]]` | — |
+| field_when | datetime | When | FALSE | — | — |
+| field_photo | image | Photo | FALSE | — | — |
+| field_related | entity_reference | Related articles | FALSE | `["target_type" => "node"]` | `["handler" => "default:node", "handler_settings" => ["target_bundles" => ["gnt_article"]]]` |
+
+Then make `field_related` multi-value:
+
+```powershell
+& $php vendor\drush\drush\drush.php php:eval '$fs = \Drupal\field\Entity\FieldStorageConfig::loadByName("node", "field_related"); $fs->setCardinality(-1); $fs->save();'
 ```
 
-Then make `field_related` multi-value and place widgets in the form display:
+Then place widgets in the form display (single eval, double-quoted PHP strings):
 
-```php
-$fs = \Drupal\field\Entity\FieldStorageConfig::loadByName('node', 'field_related'); $fs->setCardinality(-1); $fs->save();
-$form_display = \Drupal::entityTypeManager()->getStorage('entity_form_display')->load('node.gnt_article.default');
-$form_display->setComponent('body', ['type' => 'text_textarea_with_summary', 'region' => 'content']);
-$form_display->setComponent('field_subtitle', ['type' => 'string_textfield', 'region' => 'content']);
-$form_display->setComponent('field_notes', ['type' => 'text_textarea', 'region' => 'content']);
-$form_display->setComponent('field_count', ['type' => 'number', 'region' => 'content']);
-$form_display->setComponent('field_price', ['type' => 'number', 'region' => 'content']);
-$form_display->setComponent('field_active', ['type' => 'boolean_checkbox', 'region' => 'content']);
-$form_display->setComponent('field_topic', ['type' => 'options_select', 'region' => 'content']);
-$form_display->setComponent('field_when', ['type' => 'datetime_default', 'region' => 'content']);
-$form_display->setComponent('field_related', ['type' => 'entity_reference_autocomplete', 'region' => 'content']);
-$form_display->setComponent('field_photo', ['type' => 'image_image', 'region' => 'content']);
-$form_display->save();
+```powershell
+& $php vendor\drush\drush\drush.php php:eval '$form_display = \Drupal::entityTypeManager()->getStorage("entity_form_display")->load("node.gnt_article.default"); $form_display->setComponent("body", ["type" => "text_textarea_with_summary", "region" => "content"]); $form_display->setComponent("field_subtitle", ["type" => "string_textfield", "region" => "content"]); $form_display->setComponent("field_notes", ["type" => "text_textarea", "region" => "content"]); $form_display->setComponent("field_count", ["type" => "number", "region" => "content"]); $form_display->setComponent("field_price", ["type" => "number", "region" => "content"]); $form_display->setComponent("field_active", ["type" => "boolean_checkbox", "region" => "content"]); $form_display->setComponent("field_topic", ["type" => "options_select", "region" => "content"]); $form_display->setComponent("field_when", ["type" => "datetime_default", "region" => "content"]); $form_display->setComponent("field_related", ["type" => "entity_reference_autocomplete", "region" => "content"]); $form_display->setComponent("field_photo", ["type" => "image_image", "region" => "content"]); $form_display->save();'
 ```
 
 - [ ] **Step 5: Enable Gutenberg on the bundle**
@@ -153,14 +149,14 @@ $form_display->save();
 Inspect the printed structure and enable the Gutenberg experience for `gnt_article` the same way the content-type edit form does (the upstream UI checkbox writes into `gutenberg.settings`). If the structure isn't obvious, use `drush uli --uri=http://drupal-test-2.test:8080` and tick "Enable Gutenberg experience" on `/admin/structure/types/manage/gnt_article`. Then set our module's bundle scope:
 
 ```powershell
-& $php vendor\drush\drush\drush.php php:eval "\Drupal::configFactory()->getEditable('gutenberg_next.settings')->set('content_types', ['gnt_article'])->save();"
+& $php vendor\drush\drush\drush.php php:eval '\Drupal::configFactory()->getEditable("gutenberg_next.settings")->set("content_types", ["gnt_article"])->save();'
 & $php vendor\drush\drush\drush.php cr
 ```
 
 - [ ] **Step 6: Create a node + authenticated curl session**
 
 ```powershell
-& $php vendor\drush\drush\drush.php php:eval "`$n = \Drupal\node\Entity\Node::create(['type' => 'gnt_article', 'title' => 'Autosave target']); `$n->save();"
+& $php vendor\drush\drush\drush.php php:eval '$n = \Drupal\node\Entity\Node::create(["type" => "gnt_article", "title" => "Autosave target"]); $n->save();'
 $login = & $php vendor\drush\drush\drush.php uli --uri=http://drupal-test-2.test:8080 --no-browser
 curl.exe -s -c C:\Users\User\AppData\Local\Temp\opencode\drupal-test-2.jar -L -o NUL $login
 ```
@@ -735,14 +731,14 @@ final class FieldCatalog {
         continue;
       }
 
-      $fields[] = $this->buildEntry($entity, $definition);
+      $fields[] = $this->buildEntry($entity, $definition, $name);
     }
 
     usort($fields, static fn (array $a, array $b): int => strnatcasecmp($a['label'], $b['label']));
     return $fields;
   }
 
-  private function buildEntry(ContentEntityInterface $entity, object $definition): array {
+  private function buildEntry(ContentEntityInterface $entity, object $definition, string $name): array {
     $type = (string) $definition->getType();
     $kind = self::KIND_MAP[$type] ?? 'complex';
     $storage = method_exists($definition, 'getFieldStorageDefinition')
@@ -752,7 +748,7 @@ final class FieldCatalog {
     $settings = method_exists($definition, 'getSettings') ? (array) $definition->getSettings() : [];
 
     $entry = [
-      'name' => $definition->getName(),
+      'name' => $name,
       'label' => (string) $definition->getLabel(),
       'type' => $type,
       'required' => (bool) $definition->isRequired(),
@@ -857,13 +853,7 @@ Replace the `$form['#attached']['drupalSettings']['gutenbergNext'] = [...]` bloc
   }
   unset($field);
 
-  $gutenberg_settings = \Drupal::config('gutenberg.settings');
-  $csrf_token = $gutenberg_settings->get('csrf_token');
-  // The token is normally exposed via drupalSettings.gutenberg.csrfToken on
-  // editor pages; fall back to the session token endpoint value for safety.
-  if (!$csrf_token) {
-    $csrf_token = \Drupal::service('csrf_token')->get('rest');
-  }
+  $csrf_token = \Drupal::service('csrf_token')->get('rest');
 
   $entity_id = $entity->id();
   $autosave_url = ($config->get('autosave_fields') && $entity_id !== NULL)
@@ -991,7 +981,7 @@ field_bindings: true
 ```powershell
 $php = "C:\laragon\bin\php\php-8.3.30-Win32-vs16-x64\php.exe"
 & $php vendor\drush\drush\drush.php cr
-& $php vendor\drush\drush\drush.php php:eval "\Drupal::configFactory()->getEditable('gutenberg_next.settings')->set('content_types', ['gnt_article'])->save();"
+& $php vendor\drush\drush\drush.php php:eval '\Drupal::configFactory()->getEditable("gutenberg_next.settings")->set("content_types", ["gnt_article"])->save();'
 $page = curl.exe -s -b C:\Users\User\AppData\Local\Temp\opencode\drupal-test-2.jar http://drupal-test-2.test:8080/node/add/gnt_article
 $checks = @('field_subtitle', 'autocompleteUrl', '"autosave"', '"bindings"', '"kind":"text"', '"kind":"entity_reference"')
 foreach ($c in $checks) { if ($page -match $c) { "OK  $c" } else { "FAIL $c" } }
@@ -1288,7 +1278,7 @@ $php = "C:\laragon\bin\php\php-8.3.30-Win32-vs16-x64\php.exe"
 # Rebuild the authenticated session (module install may reset session):
 $login = (& $php vendor\drush\drush\drush.php uli --uri=http://drupal-test-2.test:8080 --no-browser | Select-String -Pattern "http").Matches.Value
 curl.exe -s -c C:\Users\User\AppData\Local\Temp\opencode\drupal-test-2.jar -L -o NUL $login
-$token = (& $php vendor\drush\drush\drush.php php:eval "echo \Drupal::service('csrf_token')->get('rest');")
+$token = (& $php vendor\drush\drush\drush.php php:eval 'echo \Drupal::service("csrf_token")->get("rest");')
 # POST:
 curl.exe -s -b C:\Users\User\AppData\Local\Temp\opencode\drupal-test-2.jar -H "Content-Type: application/json" -H "X-CSRF-Token: $token" -X POST -d "{\"fields\":{\"field_subtitle\":\"autosaved value\",\"field_notes\":\"n1\"}}" http://drupal-test-2.test:8080/editor/gutenberg-next/autosave/node/1
 # Expected: {"saved":true,"changed":<ts>}
@@ -1521,6 +1511,17 @@ git commit -m "feat: per-user field autosave endpoint with cleanup hooks"
       return { type: 'LOAD', payload: payload };
     },
     setFieldValue: function (name, value) {
+      const field = select(STORE_NAME).getField(name);
+      if (!field) {
+        return { type: 'NOOP' };
+      }
+      const result = validateField(field, value);
+      if (!result.ok) {
+        return { type: 'SET_INVALID', name: name, message: result.message };
+      }
+      if (!writeWidget(field, value)) {
+        return { type: 'SET_INVALID', name: name, message: __('The form widget for this field is not available in the editor.') };
+      }
       return { type: 'SET_FIELD_VALUE', name: name, value: value };
     },
     setInvalid: function (name, message) {
@@ -1534,7 +1535,10 @@ git commit -m "feat: per-user field autosave endpoint with cleanup hooks"
     },
   };
 
-  const reducer = (function (state, action) {
+  const reducer = function (state, action) {
+    if (state === undefined) {
+      state = DEFAULT_STATE;
+    }
     switch (action.type) {
       case 'LOAD': {
         const fields = {};
@@ -1551,21 +1555,6 @@ git commit -m "feat: per-user field autosave endpoint with cleanup hooks"
         const field = state.fields[action.name];
         if (!field) {
           return state;
-        }
-        const result = validateField(field, action.value);
-        if (!result.ok) {
-          return Object.assign({}, state, {
-            fields: Object.assign({}, state.fields, {
-              [action.name]: Object.assign({}, field, { invalid: { message: result.message } }),
-            }),
-          });
-        }
-        if (!writeWidget(field, action.value)) {
-          return Object.assign({}, state, {
-            fields: Object.assign({}, state.fields, {
-              [action.name]: Object.assign({}, field, { invalid: { message: __('The form widget for this field is not available in the editor.') } }),
-            }),
-          });
         }
         return Object.assign({}, state, {
           fields: Object.assign({}, state.fields, {
@@ -2250,12 +2239,8 @@ git commit -m "feat: store-driven Drupal field panel with native controls"
     },
   };
 
-  // setValues support depends on the installed Gutenberg generation; only pass
-  // the callback when the API can consume it (older builds read-only).
-  if (!source.setValues || typeof source.setValues !== 'function') {
-    delete source.setValues;
-  }
-
+  // Include setValues unconditionally: builds that don't know the callback
+  // simply never invoke it; builds that do get full write-through to the store.
   wp.blocks.registerBlockBindingsSource(source);
 
   Drupal.behaviors.gutenbergNextBindings = {

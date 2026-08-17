@@ -111,6 +111,10 @@ Storage: new table `gutenberg_next_field_autosave`
 `hook_cron`; delete rows in `hook_entity_delete`. Schema provided via
 `gutenberg_next.install`.
 
+Autosave covers saved entities only (`entity_id` set). For new nodes the
+store skips server autosave; Drupal already re-renders widget values on
+validation reloads.
+
 ### 3.4 Form render (`gutenberg_next_form_alter`)
 
 Extends the existing `drupalSettings.gutenbergNext` payload:
@@ -302,9 +306,9 @@ Environment: `http://drupal-test-2.test:8080/`
    entity_reference→node (multi), media image, paragraphs. Enable Gutenberg
    for it; enable gutenberg_next for the bundle.
 4. Automated checks:
-   - Kernel test `tests/src/Kernel/FieldValueSerializerTest.php` (run via the
-     site's phpunit after `composer require --dev drupal/core-dev`): per-type
-     normalization + complex fallback + unknown-type fallback.
+   - Standalone check `tests/check-field-serializer.php` (dependency-free,
+      stub-based, like the existing field-catalog check; also runnable in CI):
+      per-type normalization + complex fallback + unknown-type fallback.
    - curl smoke: authenticated GET of the node add form — assert the
      drupalSettings payload (catalog kinds, serialized values, autosave URL,
      bindings flag).

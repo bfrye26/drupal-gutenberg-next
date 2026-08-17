@@ -1,5 +1,5 @@
 /**
- * Gutenberg Next: modern editor shell and Gutenberg-native Drupal field panel.
+ * Gutenberg Next: modern editor shell.
  */
 (function (Drupal, drupalSettings, once) {
   'use strict';

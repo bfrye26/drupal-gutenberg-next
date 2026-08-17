@@ -14,7 +14,7 @@
   const { Button, Notice, TextControl, TextareaControl, ToggleControl, SelectControl, CheckboxControl, FormTokenField, ComboboxControl } = wp.components;
   const editorApi = wp.editor || wp.editPost;
   const PluginDocumentSettingPanel = editorApi && editorApi.PluginDocumentSettingPanel;
-  const { select, dispatch } = wp.data;
+  const { dispatch } = wp.data;
 
   function createNotice(message, status) {
     if (wp.data.dispatch('core/notices')) {
@@ -249,8 +249,8 @@
     );
   }
 
-  function FieldPanel() {
-    const fields = select(STORE_NAME).getFields();
+  function FieldPanelBody(props) {
+    const fields = props.fields;
     const names = Object.keys(fields).sort(function (a, b) {
       return fields[a].label.localeCompare(fields[b].label);
     });
@@ -273,6 +273,12 @@
     );
   }
 
+  const FieldPanel = wp.data.withSelect
+    ? wp.data.withSelect(function (selectFn) {
+        return { fields: selectFn(STORE_NAME).getFields() };
+      })(FieldPanelBody)
+    : FieldPanelBody;
+
   Drupal.behaviors.gutenbergNextFieldPanel = {
     attach: function () {
       once('gutenberg-next-field-panel', 'body').forEach(function () {
@@ -282,6 +288,10 @@
         }
         if (window.__gutenbergNextFieldPanelRegistered) {
           return;
+        }
+        if (!wp.data.withSelect && config.debug) {
+          // eslint-disable-next-line no-console
+          console.warn('[Gutenberg Next] wp.data.withSelect is unavailable; the field panel will not re-render on store changes.');
         }
         wp.plugins.registerPlugin('gutenberg-next-drupal-fields', { render: FieldPanel });
         window.__gutenbergNextFieldPanelRegistered = true;

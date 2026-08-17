@@ -125,6 +125,9 @@ function gutenberg_next_entity_autocomplete_url(\Drupal\Core\Entity\ContentEntit
  * Implements hook_cron().
  */
 function gutenberg_next_cron(): void {
+  if (!\Drupal::database()->schema()->tableExists('gutenberg_next_field_autosave')) {
+    return;
+  }
   \Drupal::database()->delete('gutenberg_next_field_autosave')
     ->condition('changed', \Drupal::time()->getRequestTime() - 86400 * 30, '<')
     ->execute();
@@ -134,6 +137,9 @@ function gutenberg_next_cron(): void {
  * Implements hook_entity_delete().
  */
 function gutenberg_next_entity_delete(EntityInterface $entity): void {
+  if (!\Drupal::database()->schema()->tableExists('gutenberg_next_field_autosave')) {
+    return;
+  }
   $id = $entity->id();
   if ($id === NULL || !is_numeric($id)) {
     return;

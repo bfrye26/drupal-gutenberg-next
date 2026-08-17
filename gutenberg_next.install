@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use Drupal\Core\Entity\EntityInterface;
-
 /**
  * @file
  * Install hooks for Gutenberg Next.

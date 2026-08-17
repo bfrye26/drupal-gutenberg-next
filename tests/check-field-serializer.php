@@ -108,6 +108,7 @@ namespace {
     'field_topic' => new FakeFieldItemList([['value' => 'news'], ['value' => 'guide']]),
     'field_when' => new FakeFieldItemList([['value' => '2026-08-17T10:30:00']]),
     'field_stamp' => new FakeFieldItemList([['value' => 1784542200]]),
+    'field_count_placeholder' => new FakeFieldItemList([[]]),
     'field_related' => new FakeFieldItemList([['target_id' => 42]], [new FakeRef(42, 'About us')]),
     'field_missing_ref' => new FakeFieldItemList([['target_id' => 99]], []),
     'field_photo' => new FakeFieldItemList([['target_id' => 7, 'alt' => 'x']]),
@@ -123,6 +124,8 @@ namespace {
   $check('list values', $v('field_topic', 'list_string') === ['news', 'guide']);
   $check('datetime storage string', $v('field_when', 'datetime') === '2026-08-17T10:30:00');
   $check('timestamp int', $v('field_stamp', 'timestamp') === 1784542200);
+  $check('number with placeholder delta is null (no warning)', $v('field_count_placeholder', 'integer') === NULL);
+  $check('boolean with placeholder delta is null (no warning)', $v('field_count_placeholder', 'boolean') === NULL);
   $check('entity reference with labels', $v('field_related', 'entity_reference') === [['id' => 42, 'label' => 'About us']]);
   $check('entity reference missing entity fallback', $v('field_missing_ref', 'entity_reference') === [['id' => 99, 'label' => '#99']]);
   $unknown = $v('field_photo', 'image');

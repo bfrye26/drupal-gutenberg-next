@@ -48,16 +48,16 @@ final class FieldValueSerializer {
     }
 
     if (in_array($type, self::NUMBER_TYPES, TRUE)) {
-      if (!array_key_exists(0, $values) || $values[0]['value'] === NULL || $values[0]['value'] === '') {
+      $number = $values[0]['value'] ?? NULL;
+      if ($number === NULL || $number === '') {
         return NULL;
       }
-      return $type === 'integer' ? (int) $values[0]['value'] : (float) $values[0]['value'];
+      return $type === 'integer' ? (int) $number : (float) $number;
     }
 
     if ($type === 'boolean') {
-      return array_key_exists(0, $values) && $values[0]['value'] !== '' && $values[0]['value'] !== NULL
-        ? (bool) $values[0]['value']
-        : NULL;
+      $flag = $values[0]['value'] ?? NULL;
+      return $flag === NULL || $flag === '' ? NULL : (bool) $flag;
     }
 
     if (in_array($type, self::LIST_TYPES, TRUE)) {

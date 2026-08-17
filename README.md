@@ -41,7 +41,7 @@ This repository is intentionally separate from site-specific CGM functionality. 
 
    ```bash
    composer config repositories.gutenberg-next vcs https://github.com/bfrye26/drupal-gutenberg-next
-   composer require cgm/drupal-gutenberg-next:^0.1
+    composer require cgm/drupal-gutenberg-next:^0.2
    ```
 
    Or, for local development, place this repository at `web/modules/custom/gutenberg_next` (or add it as a Composer path repository).
@@ -64,7 +64,7 @@ The long-term repository can absorb the Drupal Gutenberg 4.x source once a full 
 
 ## Roadmap
 
-See [`docs/ROADMAP.md`](docs/ROADMAP.md). The next engineering milestone is a real Drupal data adapter for Gutenberg's modern data/bindings APIs, followed by revision and publishing adapters.
+See [`docs/ROADMAP.md`](docs/ROADMAP.md). The next engineering milestones are publishing parity (workflow, scheduling, taxonomy controls) followed by revision parity — see the roadmap.
 
 ## Upstream
 

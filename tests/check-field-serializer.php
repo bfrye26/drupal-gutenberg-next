@@ -18,11 +18,6 @@ namespace Drupal\Core\Entity {
     public function get($fieldName);
   }
 
-  interface FieldDefinitionInterface {
-    public function getName();
-    public function getType();
-  }
-
   interface FieldItemListInterface {
     public function getValue(): array;
     public function referencedEntities(): array;
@@ -34,12 +29,19 @@ namespace Drupal\Core\Entity {
   }
 }
 
+namespace Drupal\Core\Field {
+  interface FieldDefinitionInterface {
+    public function getName();
+    public function getType();
+  }
+}
+
 namespace {
   require __DIR__ . '/../src/Bridge/FieldValueSerializer.php';
 
   use Drupal\Core\Entity\ContentEntityInterface;
   use Drupal\Core\Entity\EntityInterface;
-  use Drupal\Core\Entity\FieldDefinitionInterface;
+  use Drupal\Core\Field\FieldDefinitionInterface;
   use Drupal\Core\Entity\FieldItemListInterface;
   use Drupal\gutenberg_next\Bridge\FieldValueSerializer;
 

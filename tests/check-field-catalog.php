@@ -27,13 +27,6 @@ namespace Drupal\Core\Entity {
     public function bundle();
   }
 
-  interface FieldDefinitionInterface {
-    public function getName();
-    public function getType();
-    public function getSettings();
-    public function getFieldStorageDefinition();
-  }
-
   interface FieldStorageDefinitionInterface {
     public function getCardinality();
     public function getSetting($name);
@@ -50,6 +43,15 @@ namespace Drupal\Core\Entity {
   }
 }
 
+namespace Drupal\Core\Field {
+  interface FieldDefinitionInterface {
+    public function getName();
+    public function getType();
+    public function getSettings();
+    public function getFieldStorageDefinition();
+  }
+}
+
 namespace {
   require __DIR__ . '/../src/Bridge/FieldCatalog.php';
   require __DIR__ . '/../src/Bridge/FieldValueSerializer.php';
@@ -60,7 +62,7 @@ namespace {
   use Drupal\gutenberg_next\Bridge\FieldCatalog;
   use Drupal\gutenberg_next\Bridge\FieldValueSerializer;
 
-  final class FakeFieldDefinition implements \Drupal\Core\Entity\FieldDefinitionInterface {
+  final class FakeFieldDefinition implements \Drupal\Core\Field\FieldDefinitionInterface {
     public function __construct(
       private readonly string $label,
       private readonly string $type,

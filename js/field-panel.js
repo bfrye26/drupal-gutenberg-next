@@ -176,7 +176,16 @@
         return;
       }
       setLoading(true);
-      wp.apiFetch({ path: field.autocompleteUrl + '&q=' + encodeURIComponent(query) })
+      fetch(field.autocompleteUrl + '?q=' + encodeURIComponent(query), {
+        method: 'GET',
+        credentials: 'same-origin',
+      })
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error('autocomplete failed: ' + response.status);
+          }
+          return response.json();
+        })
         .then(function (matches) {
           setSuggestions(matches.map(function (match) {
             const idMatch = String(match.value).match(/\((\d+)\)$/);

@@ -27,3 +27,13 @@ The first browser validation should be performed on Drupal 11 with Drupal Gutenb
 - Gin and Claro admin themes
 - Drupal toolbar horizontal and vertical modes
 - Autosave/reload after unsaved changes
+
+## 0.2 data adapter checklist
+
+1. Edit each native field kind in the Drupal fields panel; save; reload; values persisted.
+2. Bind a heading block to `field_subtitle` via the block bindings UI; confirm the value renders and follows panel edits.
+3. Enter an invalid value (e.g. text in a number field); confirm the inline error appears and nothing is written to the form widget.
+4. Make edits, reload without saving; confirm the "restored from autosave" snackbar and the values are back.
+5. Save; edit; reload; confirm no stale autosave restore happens.
+6. Multi-value entity reference: search "autosave" in the token field; select; save; values persisted.
+7. Required field: clear it, submit; confirm the server error message surfaces in the panel.

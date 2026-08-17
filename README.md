@@ -4,7 +4,7 @@ Gutenberg Next is a modern integration layer for the Drupal Gutenberg 4.x projec
 
 This repository is intentionally separate from site-specific CGM functionality. Anything generally useful to Drupal/Gutenberg belongs here; CGM-specific blocks and editorial features can consume the extension APIs later.
 
-## What alpha 1 does today
+## What it does today
 
 - Works as a Drupal module alongside Drupal Gutenberg 4.x.
 - Supports Drupal 10.3+ and Drupal 11 at the module metadata level.
@@ -17,6 +17,9 @@ This repository is intentionally separate from site-specific CGM functionality. 
 - Includes a compatibility capability detector so future adapters can feature-detect WordPress packages rather than depending on a single Gutenberg generation.
 - Provides an admin settings screen and a status/parity screen.
 - Includes a CI baseline for PHP and JavaScript syntax.
+- Provides a Gutenberg-native data store for Drupal fields with typed values, dirty tracking and validation sync.
+- Lets editors edit supported Drupal fields directly in the document sidebar (strings, numbers, booleans, lists, dates, entity references) and binds heading, paragraph, button and image blocks to Drupal field values.
+- Autosaves unsaved Drupal field changes per user and restores them after an accidental reload.
 
 ## Installation on a Drupal site today
 

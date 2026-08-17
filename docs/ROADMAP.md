@@ -15,12 +15,12 @@
 
 ## 0.2: Data adapter
 
-- [ ] Replace field DOM jumps with a real Drupal entity data store
-- [ ] Read/write field values through editor state
-- [ ] Map supported Drupal fields into Block Bindings sources
-- [ ] Validation/error synchronization
-- [ ] Dirty-state and autosave synchronization
-- [ ] Entity-reference autocomplete adapter
+- [x] Replace field DOM jumps with a real Drupal entity data store
+- [x] Read/write field values through editor state
+- [x] Map supported Drupal fields into Block Bindings sources
+- [x] Validation/error synchronization
+- [x] Dirty-state and autosave synchronization
+- [x] Entity-reference autocomplete adapter
 
 ## 0.3: Publishing parity
 

@@ -41,7 +41,7 @@ final class FieldCatalog {
     'list_integer' => 'list',
     'list_float' => 'list',
     'datetime' => 'datetime',
-    'timestamp' => 'datetime',
+    'timestamp' => 'number',
     'entity_reference' => 'entity_reference',
   ];
 

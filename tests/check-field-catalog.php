@@ -178,6 +178,7 @@ namespace {
       'field_summary' => new FakeFieldDefinition('Summary', 'string', computed: TRUE, settings: ['max_length' => 255], storage: new FakeFieldStorage(1)),
       'field_topic' => new FakeFieldDefinition('Topic', 'list_string', settings: ['allowed_values' => ['news' => 'News', 'guide' => 'Guide']], storage: new FakeFieldStorage(1)),
       'field_when' => new FakeFieldDefinition('When', 'datetime', settings: ['datetime_type' => 'datetime'], storage: new FakeFieldStorage(1)),
+      'field_stamp' => new FakeFieldDefinition('Stamp', 'timestamp', storage: new FakeFieldStorage(1)),
       'field_hidden' => new FakeFieldDefinition('Hidden helper', 'string'),
     ]),
     new FakeDisplayRepository(new FakeFormDisplay([
@@ -186,6 +187,7 @@ namespace {
       'field_summary' => [],
       'field_topic' => [],
       'field_when' => [],
+      'field_stamp' => [],
     ])),
     new FieldValueSerializer(),
   );
@@ -196,8 +198,8 @@ namespace {
   $check('internal fields are excluded', !in_array('uuid', $names, TRUE) && !in_array('vid', $names, TRUE) && !in_array('langcode', $names, TRUE));
   $check('fields missing from the form display are excluded', !in_array('nid', $names, TRUE) && !in_array('created', $names, TRUE) && !in_array('field_hidden', $names, TRUE));
   $check('body is excluded', !in_array('body', $names, TRUE));
-  $check('only form-visible editorial fields remain', $names === ['field_summary', 'field_tags', 'field_topic', 'field_when']);
-  $check('fields are sorted by label', array_column($fields, 'label') === ['Summary', 'Tags', 'Topic', 'When']);
+  $check('only form-visible editorial fields remain', $names === ['field_stamp', 'field_summary', 'field_tags', 'field_topic', 'field_when']);
+  $check('fields are sorted by label', array_column($fields, 'label') === ['Stamp', 'Summary', 'Tags', 'Topic', 'When']);
   $tags = $fields[array_search('field_tags', $names, TRUE)];
   $summary = $fields[array_search('field_summary', $names, TRUE)];
   $check('required flag is exposed', $tags['required'] === TRUE && $summary['required'] === FALSE);
@@ -207,6 +209,7 @@ namespace {
   $check('kind mapping (entity_reference)', $byName['field_tags']['kind'] === 'entity_reference');
   $check('kind mapping (list)', $byName['field_topic']['kind'] === 'list');
   $check('kind mapping (datetime)', $byName['field_when']['kind'] === 'datetime');
+  $check('timestamp maps to number kind', $byName['field_stamp']['kind'] === 'number');
   $check('cardinality and multiple', $byName['field_tags']['cardinality'] === -1 && $byName['field_tags']['multiple'] === TRUE && $byName['field_summary']['multiple'] === FALSE);
   $check('list options', $byName['field_topic']['options'] === ['news' => 'News', 'guide' => 'Guide']);
   $check('max length', $byName['field_summary']['maxLength'] === 255);

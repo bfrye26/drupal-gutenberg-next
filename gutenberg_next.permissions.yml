@@ -1,0 +1,4 @@
+administer gutenberg next:
+  title: 'Administer Gutenberg Next'
+  description: 'Configure the Gutenberg Next editor integration.'
+  restrict access: true

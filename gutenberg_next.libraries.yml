@@ -1,0 +1,12 @@
+editor:
+  version: VERSION
+  css:
+    theme:
+      css/editor-shell.css: {}
+  js:
+    js/editor-bridge.js: {}
+    js/editor-shell.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once

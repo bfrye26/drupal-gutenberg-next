@@ -1,0 +1,4 @@
+services:
+  gutenberg_next.field_catalog:
+    class: Drupal\gutenberg_next\Bridge\FieldCatalog
+    arguments: ['@entity_field.manager', '@entity_display.repository']

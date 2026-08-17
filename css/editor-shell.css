@@ -1,0 +1,69 @@
+/**
+ * Gutenberg Next editor chrome.
+ */
+:root {
+  --gutenberg-next-content-width: 760px;
+  --gutenberg-next-wide-width: 1200px;
+}
+
+.gutenberg-next-enabled .gutenberg-next-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 9px;
+  margin-inline-end: 8px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  opacity: 0.72;
+  white-space: nowrap;
+}
+
+.gutenberg-next-enabled .gutenberg-next-field-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.gutenberg-next-enabled .gutenberg-next-field-button.components-button {
+  justify-content: flex-start;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gutenberg-next-enabled .interface-interface-skeleton__content,
+.gutenberg-next-enabled .edit-post-layout__content {
+  min-width: 0;
+}
+
+.gutenberg-next-enabled .edit-post-visual-editor,
+.gutenberg-next-enabled .editor-visual-editor {
+  overflow-x: clip;
+}
+
+.gutenberg-next-sticky-header .interface-interface-skeleton__header {
+  position: sticky;
+  top: var(--drupal-displace-offset-top, 0px);
+  z-index: 100;
+}
+
+/* Non-iframe fallback for editor versions that render the canvas in-document. */
+.gutenberg-next-enabled .editor-styles-wrapper .is-root-container > :where(:not(.alignwide):not(.alignfull)),
+.gutenberg-next-enabled .editor-styles-wrapper .wp-block-post-content > :where(:not(.alignwide):not(.alignfull)) {
+  width: min(100%, var(--gutenberg-next-content-width));
+  max-width: var(--gutenberg-next-content-width);
+  margin-inline: auto;
+  box-sizing: border-box;
+}
+
+.gutenberg-next-enabled .editor-styles-wrapper .is-root-container > .alignwide,
+.gutenberg-next-enabled .editor-styles-wrapper .wp-block-post-content > .alignwide {
+  width: min(100%, var(--gutenberg-next-wide-width));
+  max-width: var(--gutenberg-next-wide-width);
+  margin-inline: auto;
+  box-sizing: border-box;
+}

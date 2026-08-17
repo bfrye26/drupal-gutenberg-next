@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Drupal Gutenberg upstream
+    url: https://www.drupal.org/project/issues/gutenberg
+    about: Report issues that reproduce in the upstream Drupal Gutenberg module without Gutenberg Next.

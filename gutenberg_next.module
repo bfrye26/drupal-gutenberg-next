@@ -1,0 +1,58 @@
+<?php
+
+declare(strict_types=1);
+
+use Drupal\Core\Entity\ContentEntityFormInterface;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * @file
+ * Hooks for Gutenberg Next.
+ */
+
+/**
+ * Implements hook_form_alter().
+ */
+function gutenberg_next_form_alter(array &$form, FormStateInterface $form_state, string $form_id): void {
+  $config = \Drupal::config('gutenberg_next.settings');
+  if (!$config->get('enabled')) {
+    return;
+  }
+
+  $form_object = $form_state->getFormObject();
+  if (!$form_object instanceof ContentEntityFormInterface) {
+    return;
+  }
+
+  $entity = $form_object->getEntity();
+  if ($entity->getEntityTypeId() !== 'node') {
+    return;
+  }
+
+  $enabled_bundles = array_filter((array) $config->get('content_types'));
+  if ($enabled_bundles && !in_array($entity->bundle(), $enabled_bundles, TRUE)) {
+    return;
+  }
+
+  /** @var \Drupal\gutenberg_next\Bridge\FieldCatalog $catalog */
+  $catalog = \Drupal::service('gutenberg_next.field_catalog');
+  $module_info = \Drupal::service('extension.list.module')->getExtensionInfo('gutenberg_next');
+
+  $form['#attached']['library'][] = 'gutenberg_next/editor';
+  $form['#attached']['drupalSettings']['gutenbergNext'] = [
+    'version' => $module_info['version'] ?? '0.1.0-alpha1',
+    'contentWidth' => max(480, (int) $config->get('content_width')),
+    'wideWidth' => max(640, (int) $config->get('wide_width')),
+    'stickyHeader' => (bool) $config->get('sticky_header'),
+    'showDrupalBadge' => (bool) $config->get('show_drupal_badge'),
+    'showFieldPanel' => (bool) $config->get('show_field_panel'),
+    'injectCanvasStyles' => (bool) $config->get('inject_canvas_styles'),
+    'debug' => (bool) $config->get('debug'),
+    'entity' => [
+      'type' => $entity->getEntityTypeId(),
+      'bundle' => $entity->bundle(),
+      'id' => $entity->id(),
+      'fields' => $config->get('show_field_panel') ? $catalog->forEntity($entity) : [],
+    ],
+  ];
+}

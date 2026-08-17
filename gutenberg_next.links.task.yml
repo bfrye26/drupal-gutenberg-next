@@ -1,0 +1,9 @@
+gutenberg_next.settings_tab:
+  route_name: gutenberg_next.settings
+  title: 'Settings'
+  base_route: gutenberg_next.settings
+
+gutenberg_next.status_tab:
+  route_name: gutenberg_next.status
+  title: 'Status'
+  base_route: gutenberg_next.settings

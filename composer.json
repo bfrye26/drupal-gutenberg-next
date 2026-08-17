@@ -1,0 +1,25 @@
+{
+  "name": "cgm/drupal-gutenberg-next",
+  "description": "A modern Drupal integration layer for Gutenberg 4.x with a path toward WordPress editor parity.",
+  "type": "drupal-module",
+  "license": "GPL-2.0-or-later",
+  "homepage": "https://github.com/bfrye26/drupal-gutenberg-next",
+  "support": {
+    "issues": "https://github.com/bfrye26/drupal-gutenberg-next/issues"
+  },
+  "require": {
+    "php": ">=8.1",
+    "drupal/core": "^10.3 || ^11",
+    "drupal/gutenberg": "^4.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Drupal\\gutenberg_next\\": "src/"
+    }
+  },
+  "extra": {
+    "drupal": {
+      "version": "0.1.0-alpha1"
+    }
+  }
+}

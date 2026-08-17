@@ -1,0 +1,24 @@
+name: Feature request
+description: Propose a WordPress Gutenberg parity feature or Drupal-native improvement.
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: capability
+    attributes:
+      label: Capability
+      description: What editor capability should be added?
+    validations:
+      required: true
+  - type: textarea
+    id: wordpress
+    attributes:
+      label: WordPress/Gutenberg counterpart
+      description: Describe the upstream feature or package API if one exists.
+  - type: textarea
+    id: drupal
+    attributes:
+      label: Drupal integration
+      description: Which Drupal entities, fields, media, workflow or permissions should be authoritative?
+    validations:
+      required: true

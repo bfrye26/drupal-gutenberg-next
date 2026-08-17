@@ -1,0 +1,6 @@
+gutenberg_next.settings:
+  title: 'Gutenberg Next'
+  description: 'Configure the modern Gutenberg editor integration.'
+  route_name: gutenberg_next.settings
+  parent: system.admin_config_content
+  weight: 20

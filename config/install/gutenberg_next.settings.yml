@@ -1,0 +1,9 @@
+enabled: true
+content_types: []
+content_width: 760
+wide_width: 1200
+sticky_header: true
+show_drupal_badge: true
+show_field_panel: true
+inject_canvas_styles: true
+debug: false

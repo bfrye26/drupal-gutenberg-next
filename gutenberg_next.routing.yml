@@ -1,0 +1,15 @@
+gutenberg_next.settings:
+  path: '/admin/config/content/gutenberg-next'
+  defaults:
+    _form: '\Drupal\gutenberg_next\Form\SettingsForm'
+    _title: 'Gutenberg Next'
+  requirements:
+    _permission: 'administer gutenberg next'
+
+gutenberg_next.status:
+  path: '/admin/config/content/gutenberg-next/status'
+  defaults:
+    _controller: '\Drupal\gutenberg_next\Controller\StatusController::build'
+    _title: 'Gutenberg Next status'
+  requirements:
+    _permission: 'administer gutenberg next'

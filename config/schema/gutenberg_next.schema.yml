@@ -1,0 +1,33 @@
+gutenberg_next.settings:
+  type: config_object
+  label: 'Gutenberg Next settings'
+  mapping:
+    enabled:
+      type: boolean
+      label: 'Enable Gutenberg Next'
+    content_types:
+      type: sequence
+      label: 'Enabled content types'
+      sequence:
+        type: string
+    content_width:
+      type: integer
+      label: 'Default content width'
+    wide_width:
+      type: integer
+      label: 'Wide content width'
+    sticky_header:
+      type: boolean
+      label: 'Keep editor header visible'
+    show_drupal_badge:
+      type: boolean
+      label: 'Show Drupal integration badge'
+    show_field_panel:
+      type: boolean
+      label: 'Show Drupal fields document panel'
+    inject_canvas_styles:
+      type: boolean
+      label: 'Inject compatibility styles into the editor canvas'
+    debug:
+      type: boolean
+      label: 'Enable compatibility diagnostics'

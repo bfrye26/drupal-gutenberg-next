@@ -889,7 +889,7 @@ Widget roots (verified in Task 1 Step 5; the standard scheme below is what the c
       bridge().setWidgetValue(dateInput, parts[0] || '');
     }
     if (timeInput) {
-      bridge().setWidgetValue(timeInput, (parts[1] || '').slice(0, 5));
+      bridge().setWidgetValue(timeInput, (parts[1] || '').slice(0, 8));
     }
     return true;
   }

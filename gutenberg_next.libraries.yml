@@ -6,6 +6,7 @@ editor:
   js:
     js/editor-bridge.js: {}
     js/data-store.js: {}
+    js/field-panel.js: {}
     js/editor-shell.js: {}
   dependencies:
     - core/drupal

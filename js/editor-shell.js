@@ -116,88 +116,6 @@
       });
   }
 
-  function registerFieldPanel() {
-    const config = settings();
-    if (!config.showFieldPanel || window.__gutenbergNextFieldPanelRegistered) {
-      return false;
-    }
-
-    const wp = window.wp;
-    if (!wp?.plugins?.registerPlugin || !wp?.element?.createElement || !wp?.components) {
-      return false;
-    }
-
-    const editorApi = wp.editor || wp.editPost;
-    const PluginDocumentSettingPanel = editorApi?.PluginDocumentSettingPanel;
-    if (!PluginDocumentSettingPanel) {
-      return false;
-    }
-
-    const { createElement } = wp.element;
-    const { Button, Notice } = wp.components;
-    const fields = config.entity?.fields || [];
-
-    function FieldPanel() {
-      const children = [];
-      children.push(
-        createElement(
-          Notice,
-          {
-            key: 'status',
-            status: 'info',
-            isDismissible: false,
-          },
-          `${fields.length} Drupal field${fields.length === 1 ? '' : 's'} available for this ${config.entity?.bundle || 'content type'}.`,
-        ),
-      );
-
-      if (fields.length === 0) {
-        children.push(createElement('p', { key: 'empty' }, 'No additional Drupal fields were detected.'));
-      }
-      else {
-        children.push(
-          createElement(
-            'div',
-            { key: 'fields', className: 'gutenberg-next-field-list' },
-            fields.map((field) =>
-              createElement(
-                Button,
-                {
-                  key: field.name,
-                  variant: 'secondary',
-                  size: 'compact',
-                  className: 'gutenberg-next-field-button',
-                  onClick: () => {
-                    if (!window.GutenbergNext?.focusDrupalField(field.name)) {
-                      wp.notices?.createWarningNotice?.(`Drupal field “${field.label}” is not currently visible on the form.`, {
-                        type: 'snackbar',
-                      });
-                    }
-                  },
-                },
-                `${field.label}${field.required ? ' *' : ''}`,
-              ),
-            ),
-          ),
-        );
-      }
-
-      return createElement(
-        PluginDocumentSettingPanel,
-        {
-          name: 'gutenberg-next-drupal-fields',
-          title: 'Drupal fields',
-          className: 'gutenberg-next-document-panel',
-        },
-        children,
-      );
-    }
-
-    wp.plugins.registerPlugin('gutenberg-next-drupal-fields', { render: FieldPanel });
-    window.__gutenbergNextFieldPanelRegistered = true;
-    return true;
-  }
-
   function activate() {
     if (!editorExists()) {
       return false;
@@ -205,7 +123,6 @@
     applyDocumentClasses();
     addDrupalBadge();
     injectCanvasStyles();
-    registerFieldPanel();
     return true;
   }
 

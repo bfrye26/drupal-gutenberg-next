@@ -67,3 +67,15 @@
   margin-inline: auto;
   box-sizing: border-box;
 }
+
+.gutenberg-next-enabled .gutenberg-next-field-row {
+  margin-bottom: 16px;
+}
+
+.gutenberg-next-enabled .gutenberg-next-field-invalid .components-base-control__help {
+  color: var(--wp-admin-theme-color-darker-10, #cc1818);
+}
+
+.gutenberg-next-enabled .gutenberg-next-complex-field p {
+  margin: 0 0 8px;
+}

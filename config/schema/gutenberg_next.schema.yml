@@ -31,3 +31,9 @@ gutenberg_next.settings:
     debug:
       type: boolean
       label: 'Enable compatibility diagnostics'
+    autosave_fields:
+      type: boolean
+      label: 'Autosave Drupal field changes'
+    field_bindings:
+      type: boolean
+      label: 'Expose Drupal fields as block binding sources'

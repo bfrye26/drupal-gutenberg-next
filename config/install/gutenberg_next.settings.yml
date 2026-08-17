@@ -7,3 +7,5 @@ show_drupal_badge: true
 show_field_panel: true
 inject_canvas_styles: true
 debug: false
+autosave_fields: true
+field_bindings: true

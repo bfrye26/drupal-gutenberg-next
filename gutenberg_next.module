@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Entity\ContentEntityFormInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Site\Settings;
 
 /**
  * @file
@@ -38,6 +40,22 @@ function gutenberg_next_form_alter(array &$form, FormStateInterface $form_state,
   $catalog = \Drupal::service('gutenberg_next.field_catalog');
   $module_info = \Drupal::service('extension.list.module')->getExtensionInfo('gutenberg_next');
 
+  $show_fields = $config->get('show_field_panel') || $config->get('field_bindings');
+  $fields = $show_fields ? $catalog->forEntity($entity) : [];
+  foreach ($fields as &$field) {
+    if (($field['kind'] ?? NULL) === 'entity_reference') {
+      $field['autocompleteUrl'] = gutenberg_next_entity_autocomplete_url($entity, $field['name']);
+    }
+  }
+  unset($field);
+
+  $csrf_token = \Drupal::service('csrf_token')->get('rest');
+
+  $entity_id = $entity->id();
+  $autosave_url = ($config->get('autosave_fields') && $entity_id !== NULL)
+    ? sprintf('/editor/gutenberg-next/autosave/node/%d', (int) $entity_id)
+    : NULL;
+
   $form['#attached']['library'][] = 'gutenberg_next/editor';
   $form['#attached']['drupalSettings']['gutenbergNext'] = [
     'version' => $module_info['version'] ?? '0.1.0-alpha1',
@@ -48,11 +66,56 @@ function gutenberg_next_form_alter(array &$form, FormStateInterface $form_state,
     'showFieldPanel' => (bool) $config->get('show_field_panel'),
     'injectCanvasStyles' => (bool) $config->get('inject_canvas_styles'),
     'debug' => (bool) $config->get('debug'),
+    'autosave' => [
+      'enabled' => (bool) $config->get('autosave_fields'),
+      'url' => $autosave_url,
+      'token' => $csrf_token,
+    ],
+    'bindings' => [
+      'enabled' => (bool) $config->get('field_bindings'),
+    ],
     'entity' => [
       'type' => $entity->getEntityTypeId(),
       'bundle' => $entity->bundle(),
       'id' => $entity->id(),
-      'fields' => $config->get('show_field_panel') ? $catalog->forEntity($entity) : [],
+      'fields' => $fields,
     ],
   ];
+}
+
+/**
+ * Builds a core entity-reference autocomplete URL for a field.
+ *
+ * Mirrors \Drupal\Core\Entity\Element\EntityAutocomplete::processEntityAutocomplete:
+ * the selection settings are stored in the entity_autocomplete key/value store
+ * under an hmac key derived from the settings, target type and handler.
+ */
+function gutenberg_next_entity_autocomplete_url(\Drupal\Core\Entity\ContentEntityInterface $entity, string $field_name): ?string {
+  $definitions = \Drupal::service('entity_field.manager')->getFieldDefinitions(
+    $entity->getEntityTypeId(),
+    $entity->bundle(),
+  );
+  $definition = $definitions[$field_name] ?? NULL;
+  if (!$definition) {
+    return NULL;
+  }
+
+  $storage = $definition->getFieldStorageDefinition();
+  $target_type = (string) $storage->getSetting('target_type');
+  $handler = (string) $definition->getSetting('handler');
+  $selection_settings = (array) ($definition->getSetting('handler_settings') ?? []);
+
+  $data = serialize($selection_settings) . $target_type . $handler;
+  $key = Crypt::hmacBase64($data, Settings::getHashSalt());
+
+  $store = \Drupal::keyValue('entity_autocomplete');
+  if (!$store->has($key)) {
+    $store->set($key, $selection_settings);
+  }
+
+  return \Drupal\Core\Url::fromRoute('system.entity_autocomplete', [
+    'target_type' => $target_type,
+    'selection_handler' => $handler,
+    'selection_settings_key' => $key,
+  ])->toString();
 }

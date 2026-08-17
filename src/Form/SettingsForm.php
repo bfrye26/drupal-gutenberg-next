@@ -114,6 +114,18 @@ final class SettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('show_field_panel'),
       '#description' => $this->t('Adds a Gutenberg-native panel that can jump directly to Drupal fields on the entity form.'),
     ];
+    $form['integration']['field_bindings'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Expose Drupal fields as block binding sources'),
+      '#default_value' => $config->get('field_bindings'),
+      '#description' => $this->t('Lets editors bind heading, paragraph, button and image blocks directly to Drupal field values.'),
+    ];
+    $form['integration']['autosave_fields'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Autosave Drupal field changes'),
+      '#default_value' => $config->get('autosave_fields'),
+      '#description' => $this->t('Keeps a per-user snapshot of unsaved field edits for saved nodes and restores them after an accidental reload.'),
+    ];
     $form['integration']['debug'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Compatibility diagnostics'),
@@ -150,6 +162,8 @@ final class SettingsForm extends ConfigFormBase {
       ->set('show_field_panel', (bool) $form_state->getValue('show_field_panel'))
       ->set('inject_canvas_styles', (bool) $form_state->getValue('inject_canvas_styles'))
       ->set('debug', (bool) $form_state->getValue('debug'))
+      ->set('field_bindings', (bool) $form_state->getValue('field_bindings'))
+      ->set('autosave_fields', (bool) $form_state->getValue('autosave_fields'))
       ->save();
 
     parent::submitForm($form, $form_state);

@@ -187,7 +187,9 @@ present.
 
 - **Panel content** (one render function, used by both registrations below):
   - Status: `ToggleControl` "Published", initial from `publish.status.published`,
-    writes the `status` checkbox widget.
+    writes the `status` checkbox widget. Section omitted at render time when
+    the status widget does not exist — content_moderation removes it on
+    moderated bundles, where the workflow controls publishing instead.
   - Workflow (only when `publish.moderation`): `SelectControl` of
     `states`, initial `state`, writes the `moderation_state` select widget.
   - Schedule (only when `publish.scheduler`): two datetime inputs
@@ -215,6 +217,11 @@ present.
   into `.gutenberg-header-settings` (fallback `.editor-header__settings`)
   next to Drupal's relocated form actions; click →
   `dispatch('core/editor').togglePublishSidebar()`.
+- **Publish sidebar visibility**: upstream CSS parks
+  `.interface-interface-skeleton__actions` (where the publish panel renders)
+  offscreen. A `wp.data.subscribe` watches `isPublishSidebarOpened()` and
+  toggles body class `gutenberg-next-publish-open`; CSS un-parks the actions
+  region only while that class is present.
 - **WP publish button hidden**: `css/editor-shell.css` addition —
   `.gutenberg-next-enabled .editor-post-publish-button,
   .gutenberg-next-enabled .editor-post-publish-panel__toggle { display: none; }`
@@ -261,7 +268,8 @@ Exact inner selectors are verified on the demo site during implementation
 
 | Surface | Requires | Behavior when absent |
 |---|---|---|
-| Status / alias / author / fields sections | nothing | always shown |
+| Alias / author / fields sections | nothing | always shown |
+| Status section | the status widget in the DOM | section omitted (moderated bundles) |
 | Workflow section | content_moderation + bundle moderated | section omitted |
 | Schedule section | scheduler + bundle scheduling enabled | section omitted |
 | Featured media section | detectable media/image field | section omitted |

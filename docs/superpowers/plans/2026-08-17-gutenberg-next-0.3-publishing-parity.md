@@ -1,4 +1,4 @@
-# Gutenberg Next 0.3 — Publishing Parity Implementation Plan
+﻿# Gutenberg Next 0.3 â€” Publishing Parity Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -15,7 +15,7 @@
 - Repo root: `C:\Users\User\Downloads\gutenberg-next-0.1.0-alpha1\gutenberg_next`. Work on branch `0.3-publishing-parity` (create at execution start: `git switch -c 0.3-publishing-parity`); merge/push happens in the final task.
 - Demo site: `C:\laragon\www\Drupal-Test-2`, URL `http://drupal-test-2.test:8080/`, PHP CLI `C:\laragon\bin\php\php-8.3.30-Win32-vs16-x64\php.exe`, Composer `C:\laragon\bin\composer\composer.phar`, drush `& $php vendor\drush\drush\drush.php <args>` from the site root, cookie jar `C:\Users\User\AppData\Local\Temp\opencode\drupal-test-2.jar`.
 - The site's module copy is NOT live: before any site verification run `robocopy <repo> <site>\web\modules\custom\gutenberg_next /MIR /XD .git .superpowers /NJH /NJS` then `& $php vendor\drush\drush\drush.php cr`. If the web returns 500s with stale DI errors afterwards, delete cache_container rows via `drush php:script` (temp file: `\Drupal::database()->delete('cache_container')->execute();`) and re-request.
-- PowerShell 5.1 strips double quotes inside `php:eval` strings — always use `drush php:script <tempfile.php>` (write the PHP to a temp file under `C:\Users\User\AppData\Local\Temp\opencode\` first).
+- PowerShell 5.1 strips double quotes inside `php:eval` strings â€” always use `drush php:script <tempfile.php>` (write the PHP to a temp file under `C:\Users\User\AppData\Local\Temp\opencode\` first).
 - No new composer/npm dependencies in the module; no build step; JS is plain files over `window.wp.*` globals with feature-detect gates (0.1/0.2 pattern).
 - PHP classes: `final`, `declare(strict_types=1)`, constructor-promoted readonly properties; services in `gutenberg_next.services.yml`. JS files: IIFE `(function (Drupal, drupalSettings, once) { 'use strict'; ... })(Drupal, drupalSettings, once)`.
 - Write path is form-submit-backed: controls write Drupal widgets; no new validation rules; no new REST routes; permissions unchanged.
@@ -161,7 +161,7 @@ $html = curl.exe -s -b C:\Users\User\AppData\Local\Temp\opencode\drupal-test-2.j
 [regex]::Matches($html, 'data-drupal-selector="(edit-(?:status|moderation-state|publish-on|unpublish-on|path-0|field-topics|field-photo)[^"]*)"') | ForEach-Object { $_.Groups[1].Value } | Sort-Object -Unique
 ```
 
-Record the exact list in the report. Notes to verify: whether `edit-status` exists at all (content_moderation usually removes it on moderated bundles — that is expected and shapes Task 5), and whether publish-on/unpublish-on render date/time inputs or text inputs.
+Record the exact list in the report. Notes to verify: whether `edit-status` exists at all (content_moderation usually removes it on moderated bundles â€” that is expected and shapes Task 5), and whether publish-on/unpublish-on render date/time inputs or text inputs.
 
 - [ ] **Step 6: Verify the 0.2 flow is intact**
 
@@ -178,7 +178,7 @@ curl.exe -s -b C:\Users\User\AppData\Local\Temp\opencode\drupal-test-2.jar -H "X
 
 Expected: PAYLOAD OK, `{"saved":true,...}`, the stored value on GET, `{"cleared":true}`.
 
-- [ ] **Step 7: No commit** — environment only; record deviations in the report.
+- [ ] **Step 7: No commit** â€” environment only; record deviations in the report.
 
 ---
 
@@ -266,7 +266,7 @@ namespace Drupal\gutenberg_next\Bridge;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\Core\Path\AliasManagerInterface;
+use Drupal\path_alias\AliasManagerInterface;
 
 /**
  * Builds the publish-state payload for the editor pre-publish flow.
@@ -352,7 +352,7 @@ Expected: all `ok`, exit 0.
 
 - [ ] **Step 5: Wire into CI**
 
-`.github/workflows/ci.yml` — after the "Field serializer self-check" step add:
+`.github/workflows/ci.yml` â€” after the "Field serializer self-check" step add:
 
 ```yaml
       - name: Publish info self-check
@@ -389,9 +389,15 @@ publish = {
   alias: string|null,
   moderation: null | { state: string, states: { <id>: <label> } },
   scheduler: null | { publishOn: int|null, unpublishOn: int|null },
-  featuredMedia: null | { field: string, label: string, value: [{id, label}], autocompleteUrl: string|null },
+  featuredMedia: null | { field: string, kind: string, label: string, value: [{id, label}]|{summary, detail}, autocompleteUrl: string|null },
 }
 ```
+
+`kind` is the 0.2 catalog kind of the detected field. `value` is `[{id,label}]`
+for media entity-reference fields and the complex shape `{summary, detail}`
+for image/other fields (0.2 serializer tiers). `autocompleteUrl` may be
+present for non-reference fields too; the UI ignores it unless
+`kind === 'entity_reference'`.
 
 Config keys added: `featured_media_overrides` (string, default `''`).
 
@@ -409,7 +415,7 @@ namespace Drupal\gutenberg_next\Bridge;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\Core\Path\AliasManagerInterface;
+use Drupal\path_alias\AliasManagerInterface;
 
 /**
  * Builds the publish-state payload for the editor pre-publish flow.
@@ -540,7 +546,7 @@ final class PublishInfoBuilder {
 
   private function resolveWorkflow(ContentEntityInterface $entity): ?object {
     foreach ($this->entityTypeManager->getStorage('workflow')->loadMultiple() as $workflow) {
-      if ($workflow->getType() !== 'content_moderation') {
+      if ($workflow->getTypePlugin()->getPluginId() !== 'content_moderation') {
         continue;
       }
       $bundles = $workflow->getTypePlugin()->getConfiguration()['entity_types'][$entity->getEntityTypeId()] ?? [];
@@ -583,10 +589,11 @@ final class PublishInfoBuilder {
     if ($field_name === NULL) {
       return NULL;
     }
-    foreach ($catalog_fields as $candidate) {
+      foreach ($catalog_fields as $candidate) {
       if ($candidate['name'] === $field_name) {
         return [
           'field' => $field_name,
+          'kind' => $candidate['kind'] ?? 'complex',
           'label' => $candidate['label'] ?? $field_name,
           'value' => $candidate['value'] ?? [],
         ];
@@ -600,7 +607,7 @@ final class PublishInfoBuilder {
 
 - [ ] **Step 2: Register the service**
 
-`gutenberg_next.services.yml` — append:
+`gutenberg_next.services.yml` â€” append:
 
 ```yml
   gutenberg_next.publish_info_builder:
@@ -629,7 +636,7 @@ and add this entry to the `drupalSettings['gutenbergNext']` array (after the `'b
 
 - [ ] **Step 4: Config surface**
 
-`config/schema/gutenberg_next.schema.yml` — after `field_bindings`:
+`config/schema/gutenberg_next.schema.yml` â€” after `field_bindings`:
 
 ```yml
     featured_media_overrides:
@@ -637,13 +644,13 @@ and add this entry to the `drupalSettings['gutenbergNext']` array (after the `'b
       label: 'Featured media overrides'
 ```
 
-`config/install/gutenberg_next.settings.yml` — append:
+`config/install/gutenberg_next.settings.yml` â€” append:
 
 ```yml
 featured_media_overrides: ''
 ```
 
-`src/Form/SettingsForm.php` — in the `integration` details, after the `autosave_fields` element:
+`src/Form/SettingsForm.php` â€” in the `integration` details, after the `autosave_fields` element:
 
 ```php
     $form['integration']['featured_media_overrides'] = [
@@ -678,7 +685,7 @@ $page = curl.exe -s -b C:\Users\User\AppData\Local\Temp\opencode\drupal-test-2.j
 foreach ($c in @('"publish":{', '"moderation":{', '"scheduler":{', '"featuredMedia":{', '"field_photo"', '"In review"')) { if ($page -match [regex]::Escape($c)) { "OK  $c" } else { "FAIL $c" } }
 ```
 
-Expected: all OK (node 1 is moderated by gnt_editorial — the "In review" state label proves the workflow states landed in the payload, scheduler enabled for the bundle, field_photo auto-detected as featured media). Also fetch the add form and assert `"publish":{` appears there with `"moderation":{` present and `"alias":null`.
+Expected: all OK (node 1 is moderated by gnt_editorial â€” the "In review" state label proves the workflow states landed in the payload, scheduler enabled for the bundle, field_photo auto-detected as featured media). Also fetch the add form and assert `"publish":{` appears there with `"moderation":{` present and `"alias":null`.
 
 - [ ] **Step 6: Commit**
 
@@ -697,7 +704,7 @@ git commit -m "feat: publish info builder and editor publish payload"
 
 **Interfaces:**
 - Consumes: nothing new.
-- Produces: `window.GutenbergNext.findWidgetRoot(fieldName) -> Element|null` (wrapper-exact → exact → prefix precedence, same as the 0.2 widgetRoot) and `window.GutenbergNext.setWidgetValue(element, value)` (checkbox-aware native setter + input/change events). Task 5 builds all its widget writes on these two.
+- Produces: `window.GutenbergNext.findWidgetRoot(fieldName) -> Element|null` (wrapper-exact â†’ exact â†’ prefix precedence, same as the 0.2 widgetRoot) and `window.GutenbergNext.setWidgetValue(element, value)` (checkbox-aware native setter + input/change events). Task 5 builds all its widget writes on these two.
 
 - [ ] **Step 1: Add the helpers to editor-bridge.js**
 
@@ -819,7 +826,7 @@ git commit -m "refactor: canonical widget helpers in the editor bridge"
 - Consumes: `drupalSettings.gutenbergNext.publish` (Task 3 shape), `window.GutenbergNext.findWidgetRoot`/`setWidgetValue`/`focusDrupalField` (Tasks 1/4 of 0.2 + Task 4 here), the 0.2 store `gutenberg-next/fields` (selectors `isReady`, `getFields`), `wp.hooks` filter `editor.__unstableSavePost`, `wp.data` `core/editor` actions `togglePublishSidebar` + selector `isPublishSidebarOpened`.
 - Produces: plugin `gutenberg-next-pre-publish` (PluginPrePublishPanel in sidebar mode, PluginDocumentSettingPanel fallback), body class `gutenberg-next-publish-open` while the publish sidebar is open, header button `.gutenberg-next-publish-toggle`, and the save-blocking guard.
 
-Widget roots (verified in Task 1 Step 5; the standard scheme below is what the code targets — adjust inner selectors ONLY if Task 1's recorded list contradicts them, and record any adjustment):
+Widget roots (verified in Task 1 Step 5; the standard scheme below is what the code targets â€” adjust inner selectors ONLY if Task 1's recorded list contradicts them, and record any adjustment):
 
 | Control | Root via `findWidgetRoot(...)` | Inner target |
 |---|---|---|
@@ -828,7 +835,7 @@ Widget roots (verified in Task 1 Step 5; the standard scheme below is what the c
 | Publish on | `publish_on` | date/time inputs (fallback first text input) |
 | Unpublish on | `unpublish_on` | date/time inputs (fallback first text input) |
 | URL alias | `path` | `input[type="text"]` |
-| Featured media | the detected field name | `input[data-autocomplete-path]` or `select` |
+| Featured media | the detected field name | `input[data-autocomplete-path]` or `select` (kind `entity_reference` only; other kinds are summary + jump) |
 
 - [ ] **Step 1: Write js/pre-publish.js**
 
@@ -1038,14 +1045,19 @@ Widget roots (verified in Task 1 Step 5; the standard scheme below is what the c
     }));
 
     if (publish.featuredMedia) {
+      const isReference = publish.featuredMedia.kind === 'entity_reference';
+      const current = state.featured;
+      const summaryText = isReference
+        ? (Array.isArray(current) && current.length
+          ? current.map(function (item) { return item.label; }).join(', ')
+          : __('None'))
+        : ((current && current.summary) || __('None'));
       sections.push(createElement(
         'div',
         { key: 'featured', className: 'gutenberg-next-featured-media' },
         createElement('p', { className: 'components-base-control__label' }, __('Featured media')),
-        createElement('p', null, state.featured.length
-          ? state.featured.map(function (item) { return item.label; }).join(', ')
-          : __('None')),
-        createElement(TextControl, {
+        createElement('p', null, summaryText),
+        isReference ? createElement(TextControl, {
           placeholder: __('Search media…'),
           value: state.featuredQuery,
           onChange: function (next) {
@@ -1054,8 +1066,8 @@ Widget roots (verified in Task 1 Step 5; the standard scheme below is what the c
             });
             searchMedia(next);
           },
-        }),
-        state.featuredSuggestions.length ? createElement(
+        }) : null,
+        isReference && state.featuredSuggestions.length ? createElement(
           'ul',
           { className: 'gutenberg-next-featured-suggestions' },
           state.featuredSuggestions.map(function (item) {
@@ -1068,13 +1080,25 @@ Widget roots (verified in Task 1 Step 5; the standard scheme below is what the c
               }, item.label));
           }),
         ) : null,
-        state.featured.length ? createElement(Button, {
+        isReference && Array.isArray(current) && current.length ? createElement(Button, {
           variant: 'secondary',
           size: 'compact',
           onClick: function () {
             selectFeatured(null);
           },
         }, __('Clear')) : null,
+        !isReference ? createElement(Button, {
+          variant: 'secondary',
+          size: 'compact',
+          onClick: function () {
+            const api = bridge();
+            if (!api.focusDrupalField || !api.focusDrupalField(publish.featuredMedia.field)) {
+              setState(function (prev) {
+                return Object.assign({}, prev, { notice: __('The form widget for this field is not available in the editor.') });
+              });
+            }
+          },
+        }, __('Edit in form')) : null,
       ));
     }
 
@@ -1130,7 +1154,7 @@ Widget roots (verified in Task 1 Step 5; the standard scheme below is what the c
                     });
                   }
                 },
-              }, field.label + (problems.length ? ' — ' + problems.join('; ') : '')));
+              }, field.label + (problems.length ? ' â€” ' + problems.join('; ') : '')));
           }),
         ),
       ));
@@ -1189,7 +1213,7 @@ Widget roots (verified in Task 1 Step 5; the standard scheme below is what the c
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'gutenberg-next-publish-toggle button';
-    button.textContent = __('Publish…');
+    button.textContent = __('Publishâ€¦');
     button.addEventListener('click', function () {
       dispatch('core/editor').togglePublishSidebar();
     });
@@ -1285,7 +1309,7 @@ Widget roots (verified in Task 1 Step 5; the standard scheme below is what the c
 
 - [ ] **Step 2: Register the library file**
 
-`gutenberg_next.libraries.yml` — after `js/bindings.js: {}`:
+`gutenberg_next.libraries.yml` â€” after `js/bindings.js: {}`:
 
 ```yml
     js/pre-publish.js: {}
@@ -1364,7 +1388,7 @@ git commit -m "feat: Drupal publishing controls in the Gutenberg pre-publish flo
 version: '0.3.0-alpha1'
 ```
 
-`composer.json` — change `"version": "0.2.0-alpha1"` to `"version": "0.3.0-alpha1"` (in `extra.drupal`).
+`composer.json` â€” change `"version": "0.2.0-alpha1"` to `"version": "0.3.0-alpha1"` (in `extra.drupal`).
 
 - [ ] **Step 2: CHANGELOG**
 
@@ -1403,7 +1427,7 @@ Append to `docs/TESTING.md`:
 ```markdown
 ## 0.3 publishing parity checklist
 
-1. Open a gnt_article node edit form; confirm the "Publish…" button appears in the editor header.
+1. Open a gnt_article node edit form; confirm the "Publishâ€¦" button appears in the editor header.
 2. Click it; confirm the publish sidebar opens with Drupal publishing sections.
 3. Change the workflow state; save; confirm the node's moderation state changed.
 4. Set a future "Publish on" date; save; confirm publish_on is stored (scheduler).
@@ -1432,7 +1456,7 @@ php tests\check-field-serializer.php
 php tests\check-publish-info.php
 ```
 
-On the demo site (robocopy refresh + `drush cr` first): re-run Task 3 Step 5's payload checks and the Task 1 Step 6 autosave round-trip once more; record outputs. The browser checklist from Step 5 is interactive — state clearly in the report that it was not executed and leave it for the user.
+On the demo site (robocopy refresh + `drush cr` first): re-run Task 3 Step 5's payload checks and the Task 1 Step 6 autosave round-trip once more; record outputs. The browser checklist from Step 5 is interactive â€” state clearly in the report that it was not executed and leave it for the user.
 
 - [ ] **Step 7: Commit and push**
 
@@ -1458,3 +1482,5 @@ Expected: CI green (syntax, composer validate, all three self-checks). If CI fai
 - Spec coverage: 4.1/4.2 builder + pure helpers (Tasks 2-3), 4.3 payload + config (Task 3), 5.1 bridge refactor (Task 4), 5.2 panel/registration/header button/sidebar visibility/WP-button hiding/save guard (Task 5), 5.3 widget targets (Task 5 table + Task 1 selector recording), 6 data flows (Tasks 3-5 combined), 7 feature-detection matrix (Task 3 NULL branches + Task 5 render-time checks), 8 error/security (no new routes; guard reuses 0.2 invalid state), 9 config/versioning/release (Tasks 3 + 6), 10 testing (Tasks 1, 2, 3, 6), 11 done definition (Task 6 + merge), 12 out-of-scope (nothing planned).
 - Type consistency: `parseOverrides`/`detectFeaturedField` signatures identical in Tasks 2-3; payload key names (`status.published`, `moderation.state`/`states`, `scheduler.publishOn`/`unpublishOn`, `featuredMedia.field`/`label`/`value`/`autocompleteUrl`) identical across Tasks 3 and 5; bridge helper names `findWidgetRoot`/`setWidgetValue` identical in Tasks 4 and 5; store name `gutenberg-next/fields` and plugin name `gutenberg-next-pre-publish` consistent.
 - Known verification points deferred to execution (recorded, not placeholders): exact scheduler widget input types (Task 1 Step 5 records them; Task 5's writeDatetime handles date/time inputs with a text-input fallback), content_moderation workflow plugin method availability (Task 1 Step 3 carries the configuration-array fallback), publish-sidebar un-park selectors (Task 5 CSS targets the researched class names; the site check in Task 5 Step 4 confirms the markers are served).
+
+

@@ -98,12 +98,19 @@ Constructor deps: `module_handler`, `entity_type.manager`, `path_alias.manager`.
   ],
   'featuredMedia' => NULL | [
     'field' => 'field_photo',
+    'kind' => 'entity_reference',
     'label' => 'Photo',
     'value' => [['id' => 7, 'label' => 'logo.png']],
     'autocompleteUrl' => '/entity_reference_autocomplete/media/default/<key>',
   ],
 ]
 ```
+
+`kind` is the 0.2 catalog kind of the detected field; `value` is `[{id,label}]`
+for media entity-reference fields and the complex `{summary, detail}` shape for
+image/other fields. The panel offers autocomplete + write only for
+`entity_reference` kind; other kinds render a summary plus an "Edit in form"
+jump.
 
 Rules:
 
@@ -197,9 +204,10 @@ present.
     `publish_on` / `unpublish_on` widgets; clearable.
   - URL alias: `TextControl` initial `publish.alias`, writes the
     `path[0][alias]` textfield.
-  - Featured media (only when `publish.featuredMedia`): current value summary,
-    media-entity autocomplete control (0.2 entity-reference pattern against
-    `autocompleteUrl`), "Edit in form" jump.
+  - Featured media (only when `publish.featuredMedia`): current value summary;
+    for `kind === 'entity_reference'` a media-entity autocomplete control
+    (0.2 entity-reference pattern against `autocompleteUrl`) with write + clear;
+    for other kinds (image/complex) an "Edit in form" jump instead.
   - Author: read-only "by <name>" line + "Edit in form" jump (upstream owns
     the author widget panel).
   - Fields: list from the 0.2 store — required/invalid markers, click jumps to

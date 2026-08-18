@@ -6,6 +6,7 @@ use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Entity\ContentEntityFormInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Site\Settings;
 
 /**
@@ -83,6 +84,7 @@ function gutenberg_next_form_alter(array &$form, FormStateInterface $form_state,
       'enabled' => (bool) $config->get('field_bindings'),
     ],
     'publish' => $publish,
+    'revisions' => NULL,
     'entity' => [
       'type' => $entity->getEntityTypeId(),
       'bundle' => $entity->bundle(),
@@ -90,6 +92,17 @@ function gutenberg_next_form_alter(array &$form, FormStateInterface $form_state,
       'fields' => $fields,
     ],
   ];
+
+  if ($entity->id() !== NULL && gutenberg_next_revision_view_access($entity, \Drupal::currentUser())) {
+    $form['#attached']['drupalSettings']['gutenbergNext']['revisions'] = [
+      'enabled' => TRUE,
+      'listUrl' => sprintf('/editor/gutenberg-next/revisions/node/%d', (int) $entity->id()),
+      'revertUrlBase' => sprintf('/node/%d/revisions/', (int) $entity->id()),
+    ];
+  }
+  else {
+    unset($form['#attached']['drupalSettings']['gutenbergNext']['revisions']);
+  }
 }
 
 /**
@@ -156,4 +169,20 @@ function gutenberg_next_entity_delete(EntityInterface $entity): void {
     ->condition('entity_type', $entity->getEntityTypeId())
     ->condition('entity_id', (int) $id)
     ->execute();
+}
+
+/**
+ * Revision-view access check mirroring core's NodeRevisionAccessCheck.
+ *
+ * Core 11.4 removed NodeRevisionAccessCheck; the version-history route now
+ * requires '_entity_access: node.view all revisions', evaluated by
+ * NodeAccessControlHandler (requires 'access content' plus any of
+ * 'view all revisions', 'view {bundle} revisions', 'administer nodes').
+ * Delegating to the same operation replicates core exactly.
+ */
+function gutenberg_next_revision_view_access(EntityInterface $entity, AccountInterface $account): bool {
+  if (!$entity->getEntityType()->hasKey('revision')) {
+    return FALSE;
+  }
+  return $entity->access('view all revisions', $account);
 }

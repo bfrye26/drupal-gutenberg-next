@@ -51,3 +51,35 @@ gutenberg_next.field_autosave.clear:
     entity_type: 'node'
   options:
     no_cache: TRUE
+
+gutenberg_next.revision_list:
+  path: '/editor/gutenberg-next/revisions/node/{node}'
+  defaults:
+    _controller: '\Drupal\gutenberg_next\Controller\RevisionController::revisionList'
+    _format: 'json'
+  methods: [GET]
+  requirements:
+    _custom_access: '\Drupal\gutenberg_next\Controller\RevisionController::revisionListAccess'
+  options:
+    no_cache: TRUE
+    parameters:
+      node:
+        type: entity:node
+
+gutenberg_next.revision_view:
+  path: '/editor/gutenberg-next/revisions/node/{node}/{node_revision}'
+  defaults:
+    _controller: '\Drupal\gutenberg_next\Controller\RevisionController::revisionView'
+    _format: 'json'
+  methods: [GET]
+  requirements:
+    # Core 11.4 removed the _access_node_revision requirement along with
+    # NodeRevisionAccessCheck; this mirrors core's entity.node.revision route.
+    _entity_access: 'node_revision.view revision'
+  options:
+    no_cache: TRUE
+    parameters:
+      node:
+        type: entity:node
+      node_revision:
+        type: entity_revision:node

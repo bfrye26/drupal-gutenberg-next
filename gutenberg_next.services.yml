@@ -7,3 +7,6 @@ services:
   gutenberg_next.publish_info_builder:
     class: Drupal\gutenberg_next\Bridge\PublishInfoBuilder
     arguments: ['@module_handler', '@entity_type.manager', '@path_alias.manager']
+  gutenberg_next.revision_info_builder:
+    class: Drupal\gutenberg_next\Bridge\RevisionInfoBuilder
+    arguments: ['@entity_type.manager', '@renderer']

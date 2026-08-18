@@ -18,22 +18,48 @@ final class RevisionInfoBuilder {
     private readonly RendererInterface $renderer,
   ) {}
 
-  /**
-   * Builds the revision list payload for an entity.
-   *
-   * Task 3 fills this in; this task ships the pure helper.
-   */
   public function buildList(ContentEntityInterface $entity): array {
-    return [];
+    $storage = $this->entityTypeManager->getStorage($entity->getEntityTypeId());
+    $vids = array_keys($storage->getQuery()
+      ->allRevisions()
+      ->condition($entity->getEntityType()->getKey('id'), $entity->id())
+      ->accessCheck(FALSE)
+      ->execute());
+
+    $rows = [];
+    foreach ($vids as $vid) {
+      $revision = $storage->loadRevision($vid);
+      if (!$revision) {
+        continue;
+      }
+      $user = method_exists($revision, 'getRevisionUser') ? $revision->getRevisionUser() : NULL;
+      $rows[] = [
+        'vid' => (int) $vid,
+        'isDefault' => (bool) $revision->isDefaultRevision(),
+        'timestamp' => method_exists($revision, 'getRevisionCreationTime') ? (int) $revision->getRevisionCreationTime() : 0,
+        'authorId' => $user ? (int) $user->id() : 0,
+        'authorName' => $user ? (string) $user->label() : '',
+        'log' => method_exists($revision, 'getRevisionLogMessage') ? (string) $revision->getRevisionLogMessage() : '',
+      ];
+    }
+
+    return self::formatList($rows);
   }
 
-  /**
-   * Builds the rendered-revision payload.
-   *
-   * Task 3 fills this in; this task ships the pure helper.
-   */
   public function buildRevisionView(ContentEntityInterface $revision): array {
-    return [];
+    $user = method_exists($revision, 'getRevisionUser') ? $revision->getRevisionUser() : NULL;
+    $view_builder = $this->entityTypeManager->getViewBuilder($revision->getEntityTypeId());
+    $build = $view_builder->view($revision, 'full');
+    $html = (string) $this->renderer->renderPlain($build);
+
+    return [
+      'vid' => (int) $revision->getRevisionId(),
+      'title' => (string) $revision->label(),
+      'html' => $html,
+      'timestamp' => method_exists($revision, 'getRevisionCreationTime') ? (int) $revision->getRevisionCreationTime() : 0,
+      'authorName' => $user ? (string) $user->label() : '',
+      'log' => method_exists($revision, 'getRevisionLogMessage') ? (string) $revision->getRevisionLogMessage() : '',
+    ];
   }
 
   /**

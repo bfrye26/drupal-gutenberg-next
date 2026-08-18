@@ -185,6 +185,7 @@ final class PublishInfoBuilder {
       if ($candidate['name'] === $field_name) {
         return [
           'field' => $field_name,
+          'kind' => $candidate['kind'] ?? 'complex',
           'label' => $candidate['label'] ?? $field_name,
           'value' => $candidate['value'] ?? [],
         ];

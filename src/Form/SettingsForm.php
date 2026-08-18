@@ -126,6 +126,12 @@ final class SettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('autosave_fields'),
       '#description' => $this->t('Keeps a per-user snapshot of unsaved field edits for saved nodes and restores them after an accidental reload.'),
     ];
+    $form['integration']['featured_media_overrides'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Featured media overrides'),
+      '#default_value' => $config->get('featured_media_overrides'),
+      '#description' => $this->t('One "content_type: field_name" per line; "content_type: none" disables featured media for that type. Leave empty to auto-detect the first media or image field.'),
+    ];
     $form['integration']['debug'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Compatibility diagnostics'),
@@ -164,6 +170,7 @@ final class SettingsForm extends ConfigFormBase {
       ->set('debug', (bool) $form_state->getValue('debug'))
       ->set('field_bindings', (bool) $form_state->getValue('field_bindings'))
       ->set('autosave_fields', (bool) $form_state->getValue('autosave_fields'))
+      ->set('featured_media_overrides', (string) $form_state->getValue('featured_media_overrides'))
       ->save();
 
     parent::submitForm($form, $form_state);

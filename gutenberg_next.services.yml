@@ -4,3 +4,6 @@ services:
     arguments: ['@entity_field.manager', '@entity_display.repository', '@gutenberg_next.field_value_serializer']
   gutenberg_next.field_value_serializer:
     class: Drupal\gutenberg_next\Bridge\FieldValueSerializer
+  gutenberg_next.publish_info_builder:
+    class: Drupal\gutenberg_next\Bridge\PublishInfoBuilder
+    arguments: ['@module_handler', '@entity_type.manager', '@path_alias.manager']

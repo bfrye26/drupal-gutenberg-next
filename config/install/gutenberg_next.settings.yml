@@ -9,3 +9,4 @@ inject_canvas_styles: true
 debug: false
 autosave_fields: true
 field_bindings: true
+featured_media_overrides: ''

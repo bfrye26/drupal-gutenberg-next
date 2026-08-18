@@ -37,3 +37,6 @@ gutenberg_next.settings:
     field_bindings:
       type: boolean
       label: 'Expose Drupal fields as block binding sources'
+    featured_media_overrides:
+      type: string
+      label: 'Featured media overrides'

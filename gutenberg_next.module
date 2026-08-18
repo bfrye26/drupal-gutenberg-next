@@ -50,6 +50,13 @@ function gutenberg_next_form_alter(array &$form, FormStateInterface $form_state,
   }
   unset($field);
 
+  /** @var \Drupal\gutenberg_next\Bridge\PublishInfoBuilder $publish_builder */
+  $publish_builder = \Drupal::service('gutenberg_next.publish_info_builder');
+  $publish = $publish_builder->build($entity, $fields);
+  if (isset($publish['featuredMedia']['field'])) {
+    $publish['featuredMedia']['autocompleteUrl'] = gutenberg_next_entity_autocomplete_url($entity, $publish['featuredMedia']['field']);
+  }
+
   $csrf_token = \Drupal::service('csrf_token')->get('rest');
 
   $entity_id = $entity->id();
@@ -75,6 +82,7 @@ function gutenberg_next_form_alter(array &$form, FormStateInterface $form_state,
     'bindings' => [
       'enabled' => (bool) $config->get('field_bindings'),
     ],
+    'publish' => $publish,
     'entity' => [
       'type' => $entity->getEntityTypeId(),
       'bundle' => $entity->bundle(),

@@ -29,3 +29,5 @@ jobs:
         run: php tests/check-field-serializer.php
       - name: Publish info self-check
         run: php tests/check-publish-info.php
+      - name: Revision info self-check
+        run: php tests/check-revision-info.php

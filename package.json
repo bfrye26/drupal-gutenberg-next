@@ -4,7 +4,7 @@
   "private": true,
   "description": "Development tooling for the Gutenberg Next Drupal module.",
   "scripts": {
-    "check": "node --check js/editor-bridge.js && node --check js/editor-shell.js"
+    "check": "node --check js/editor-bridge.js && node --check js/data-store.js && node --check js/editor-shell.js && node --check js/field-panel.js && node --check js/bindings.js && node --check js/pre-publish.js"
   },
   "engines": {
     "node": ">=20"

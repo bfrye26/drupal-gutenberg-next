@@ -107,3 +107,38 @@ ul.gutenberg-next-featured-suggestions {
 .gutenberg-next-prepublish-save {
   margin-top: 16px;
 }
+
+.gutenberg-next-revision-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.gutenberg-next-revision-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.gutenberg-next-revision-current {
+  color: var(--wp-admin-theme-color, #007cba);
+  font-weight: 600;
+}
+
+.gutenberg-next-revision-compare .components-modal__content {
+  max-width: none;
+  width: 90vw;
+}
+
+.gutenberg-next-revision-compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.gutenberg-next-revision-view {
+  border: 1px solid #ddd;
+  padding: 16px;
+  overflow: auto;
+  max-height: 70vh;
+}

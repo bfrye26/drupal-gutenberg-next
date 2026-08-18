@@ -9,6 +9,7 @@ editor:
     js/field-panel.js: {}
     js/bindings.js: {}
     js/pre-publish.js: {}
+    js/revisions.js: {}
     js/editor-shell.js: {}
   dependencies:
     - core/drupal

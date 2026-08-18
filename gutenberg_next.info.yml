@@ -2,7 +2,7 @@ name: Gutenberg Next
 type: module
 description: 'A modern compatibility and Drupal integration layer for Gutenberg 4.x.'
 package: Content authoring
-version: '0.2.0-alpha1'
+version: '0.3.0-alpha1'
 core_version_requirement: ^10.3 || ^11
 dependencies:
   - gutenberg:gutenberg

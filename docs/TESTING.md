@@ -38,3 +38,15 @@ The first browser validation should be performed on Drupal 11 with Drupal Gutenb
 6. Multi-value entity reference: search "autosave" in the token field; select; save; values persisted.
 7. Required field: clear it, submit; confirm the server error message surfaces in the panel.
 8. Submit immediately after a rapid edit; if a stale autosave restore notice appears later, the snapshot raced the save — deleting the stale snapshot (edit once more and save) resolves it.
+
+## 0.3 publishing parity checklist
+
+1. Open a gnt_article node edit form; confirm the "Publish…" button appears in the editor header.
+2. Click it; confirm the publish sidebar opens with Drupal publishing sections.
+3. Change the workflow state; save; confirm the node's moderation state changed.
+4. Set a future "Publish on" date; save; confirm publish_on is stored (scheduler).
+5. Edit the URL alias in the panel; save; confirm the alias persists.
+6. Search and pick a media item for featured media; save; confirm the field value persists.
+7. Clear a required field in the Drupal fields panel, then try to save from the publish panel; confirm the save is blocked with an error naming the field.
+8. On a moderated node confirm the Published toggle is absent (workflow owns publishing) and everything else still works.
+9. Confirm taxonomy term fields (Topics) still edit via the Drupal fields panel autocomplete.

@@ -24,13 +24,13 @@
 
 ## 0.3: Publishing parity
 
-- [ ] Drupal status in Gutenberg pre-publish flow
-- [ ] Scheduled publishing
-- [ ] Author/entity-reference controls
-- [ ] Taxonomy controls
-- [ ] URL alias/permalink integration
-- [ ] Featured media integration
-- [ ] Content Moderation workflow states
+- [x] Drupal status in Gutenberg pre-publish flow
+- [x] Scheduled publishing
+- [x] Author/entity-reference controls
+- [x] Taxonomy controls
+- [x] URL alias/permalink integration
+- [x] Featured media integration
+- [x] Content Moderation workflow states
 
 ## 0.4: Revision parity
 

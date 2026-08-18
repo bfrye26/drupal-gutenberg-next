@@ -20,6 +20,8 @@ This repository is intentionally separate from site-specific CGM functionality. 
 - Provides a Gutenberg-native data store for Drupal fields with typed values, dirty tracking and validation sync.
 - Lets editors edit supported Drupal fields directly in the document sidebar (strings, numbers, booleans, lists, dates, entity references) and binds heading, paragraph, button and image blocks to Drupal field values.
 - Autosaves unsaved Drupal field changes per user and restores them after an accidental reload.
+- Adds a Gutenberg-native pre-publish flow with Drupal status, Content Moderation workflow states, Scheduler dates, URL alias, featured media and author summaries.
+- Blocks editor saves while Drupal fields are invalid; Drupal's own validation stays authoritative.
 
 ## Installation on a Drupal site today
 

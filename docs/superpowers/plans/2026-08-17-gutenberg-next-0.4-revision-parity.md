@@ -316,7 +316,7 @@ Replace the two stub methods in `src/Bridge/RevisionInfoBuilder.php` with:
     $user = method_exists($revision, 'getRevisionUser') ? $revision->getRevisionUser() : NULL;
     $view_builder = $this->entityTypeManager->getViewBuilder($revision->getEntityTypeId());
     $build = $view_builder->view($revision, 'full');
-    $html = (string) $this->renderer->renderPlain($build);
+    $html = (string) $this->renderer->renderInIsolation($build);
 
     return [
       'vid' => (int) $revision->getRevisionId(),

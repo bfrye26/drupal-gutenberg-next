@@ -7,7 +7,6 @@ namespace Drupal\gutenberg_next\Controller;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\gutenberg_next\Bridge\RevisionInfoBuilder;
 use Drupal\node\Entity\Node;

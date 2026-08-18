@@ -145,16 +145,15 @@
       state.revisions.map(function (revision) {
         return createElement('div', { key: revision.vid, className: 'gutenberg-next-revision-row' },
           createElement(CheckboxControl, {
+            label: formatDate(revision.timestamp) + ' — ' + (revision.authorName || __('Anonymous')),
             checked: state.selected.includes(revision.vid),
             onChange: function () {
               toggleSelect(revision.vid);
             },
           }),
           createElement('div', { className: 'gutenberg-next-revision-info' },
-            createElement('strong', null, formatDate(revision.timestamp)),
-            revision.isDefault ? createElement('span', { className: 'gutenberg-next-revision-current' }, ' ' + __('Current')) : null,
-            createElement('div', null,
-              (revision.authorName || __('Anonymous')) + (revision.log ? ' — ' + revision.log : '')),
+            revision.isDefault ? createElement('span', { className: 'gutenberg-next-revision-current' }, __('Current')) : null,
+            revision.log ? createElement('div', null, revision.log) : null,
           ),
           !revision.isDefault ? createElement(Button, {
             variant: 'link',

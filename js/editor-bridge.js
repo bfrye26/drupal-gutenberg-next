@@ -55,6 +55,36 @@
     return true;
   };
 
+  API.findWidgetRoot = function (fieldName) {
+    const selectorName = String(fieldName).replaceAll('_', '-');
+    return (
+      document.querySelector('[data-drupal-selector="edit-' + selectorName + '-wrapper"]') ||
+      document.querySelector('[data-drupal-selector="edit-' + selectorName + '"]') ||
+      document.querySelector('[data-drupal-selector^="edit-' + selectorName + '-"]')
+    );
+  };
+
+  API.setWidgetValue = function (element, value) {
+    if (!element) {
+      return;
+    }
+    if (element.type === 'checkbox') {
+      element.checked = Boolean(value);
+      element.dispatchEvent(new Event('change', { bubbles: true }));
+      return;
+    }
+    const proto = Object.getPrototypeOf(element);
+    const descriptor = Object.getOwnPropertyDescriptor(proto, 'value');
+    if (descriptor && descriptor.set) {
+      descriptor.set.call(element, value);
+    }
+    else {
+      element.value = value;
+    }
+    element.dispatchEvent(new Event('input', { bubbles: true }));
+    element.dispatchEvent(new Event('change', { bubbles: true }));
+  };
+
   API.capabilities = function () {
     const wp = API.getWp() || {};
     return {

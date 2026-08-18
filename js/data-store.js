@@ -72,6 +72,10 @@
     }
 
     function widgetRoot(fieldName) {
+      const api = window.GutenbergNext;
+      if (api && api.findWidgetRoot) {
+        return api.findWidgetRoot(fieldName);
+      }
       const selectorName = String(fieldName).replaceAll('_', '-');
       return (
         document.querySelector('[data-drupal-selector="edit-' + selectorName + '-wrapper"]') ||
@@ -81,11 +85,17 @@
     }
 
     function setNativeValue(input, value) {
+      const api = window.GutenbergNext;
+      if (api && api.setWidgetValue) {
+        api.setWidgetValue(input, value);
+        return;
+      }
       const proto = Object.getPrototypeOf(input);
       const descriptor = Object.getOwnPropertyDescriptor(proto, 'value');
       if (descriptor && descriptor.set) {
         descriptor.set.call(input, value);
-      } else {
+      }
+      else {
         input.value = value;
       }
       input.dispatchEvent(new Event('input', { bubbles: true }));

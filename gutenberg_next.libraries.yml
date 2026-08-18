@@ -8,6 +8,7 @@ editor:
     js/data-store.js: {}
     js/field-panel.js: {}
     js/bindings.js: {}
+    js/pre-publish.js: {}
     js/editor-shell.js: {}
   dependencies:
     - core/drupal

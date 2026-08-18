@@ -79,3 +79,31 @@
 .gutenberg-next-enabled .gutenberg-next-complex-field p {
   margin: 0 0 8px;
 }
+
+/* Unpark the editor actions region while the Drupal publish flow is open
+   (upstream parks it offscreen). */
+.gutenberg-next-publish-open .interface-interface-skeleton__actions {
+  position: static;
+  top: auto;
+}
+
+/* WP's own publish button only triggers the non-persisting mock save. */
+.gutenberg-next-enabled .editor-post-publish-button,
+.gutenberg-next-enabled .editor-post-publish-panel__toggle {
+  display: none;
+}
+
+.gutenberg-next-publish-toggle {
+  margin-inline-end: 8px;
+}
+
+ul.gutenberg-next-prepublish-fields,
+ul.gutenberg-next-featured-suggestions {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gutenberg-next-prepublish-save {
+  margin-top: 16px;
+}

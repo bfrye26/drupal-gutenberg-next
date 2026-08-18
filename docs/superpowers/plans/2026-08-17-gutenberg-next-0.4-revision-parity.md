@@ -136,18 +136,18 @@ namespace {
   };
 
   $rows = [
-    ['vid' => 1, 'isDefault' => FALSE, 'timestamp' => 1000, 'authorId' => 2, 'authorName' => 'Ada', 'log' => 'first'],
+    ['vid' => 1, 'isDefault' => FALSE, 'timestamp' => 9000, 'authorId' => 2, 'authorName' => 'Ada', 'log' => 'first'],
     ['vid' => 3, 'isDefault' => TRUE, 'timestamp' => 3000, 'authorId' => 1],
     ['vid' => 2, 'isDefault' => FALSE, 'timestamp' => 3000, 'authorId' => 2, 'authorName' => 'Ada', 'log' => ''],
   ];
   $formatted = RevisionInfoBuilder::formatList($rows);
 
-  $check('newest-first by timestamp', array_column($formatted, 'vid') === [3, 2, 1] || array_column($formatted, 'vid') === [2, 3, 1]);
-  $check('timestamp tie broken by vid descending', array_column($formatted, 'vid') === [3, 2, 1]);
-  $check('missing log defaults to empty string', $formatted[0]['log'] === '');
-  $check('missing authorName defaults to empty string', $formatted[0]['authorName'] === '');
-  $check('defaults preserved on complete rows', $formatted[2]['log'] === 'first' && $formatted[2]['authorName'] === 'Ada');
-  $check('isDefault cast to bool', $formatted[0]['isDefault'] === TRUE && $formatted[2]['isDefault'] === FALSE);
+  $check('newest-first by timestamp', array_column($formatted, 'vid') === [1, 3, 2]);
+  $check('timestamp tie broken by vid descending', $formatted[1]['vid'] === 3 && $formatted[2]['vid'] === 2);
+  $check('missing log defaults to empty string', $formatted[1]['log'] === '');
+  $check('missing authorName defaults to empty string', $formatted[1]['authorName'] === '');
+  $check('defaults preserved on complete rows', $formatted[0]['log'] === 'first' && $formatted[0]['authorName'] === 'Ada');
+  $check('isDefault cast to bool', $formatted[1]['isDefault'] === TRUE && $formatted[0]['isDefault'] === FALSE);
   $check('empty input returns empty list', RevisionInfoBuilder::formatList([]) === []);
 
   exit($failures === 0 ? 0 : 1);

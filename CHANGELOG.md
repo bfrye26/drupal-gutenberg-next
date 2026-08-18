@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.0-alpha1 - 2026-08-17
+
+### Added
+
+- In-editor Drupal revision browser: newest-first list with author, date, log message and current-revision badge.
+- Visual revision comparison: server-rendered side-by-side view of any two revisions in a modal.
+- Restore entry point from the revision browser, jumping to Drupal core's revert confirmation form.
+- Read-only revision endpoints with core revision-view access semantics.
+
 ## 0.3.0-alpha1 - 2026-08-17
 
 ### Added

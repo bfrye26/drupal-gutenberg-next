@@ -50,3 +50,13 @@ The first browser validation should be performed on Drupal 11 with Drupal Gutenb
 7. Clear a required field in the Drupal fields panel, then try to save from the publish panel; confirm the save is blocked with an error naming the field.
 8. On a moderated node confirm the Published toggle is absent (workflow owns publishing) and everything else still works.
 9. Confirm taxonomy term fields (Topics) still edit via the Drupal fields panel autocomplete.
+
+## 0.4 revision parity checklist
+
+1. Open a node edit form with at least three revisions; confirm the Revisions panel lists them newest-first with author, date and log messages.
+2. Confirm the current revision is badged and has no Restore button.
+3. Select two revisions; confirm Compare selected enables and opens the modal.
+4. Confirm both panes render the revision content (titles, dates, rendered blocks) side by side.
+5. Click Restore on an older revision; confirm Drupal's revert confirmation form opens for that revision.
+6. Complete the revert; confirm the node content reflects the restored revision.
+7. As a user without revision-view access, confirm the Revisions panel does not appear.

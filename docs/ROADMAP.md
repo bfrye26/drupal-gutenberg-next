@@ -34,10 +34,10 @@
 
 ## 0.4: Revision parity
 
-- [ ] Drupal entity revision browser
-- [ ] Gutenberg visual change comparison
-- [ ] Restore revision
-- [ ] Revision author/message metadata
+- [x] Drupal entity revision browser
+- [x] Gutenberg visual change comparison
+- [x] Restore revision
+- [x] Revision author/message metadata
 
 ## 0.5: Theme and design parity
 

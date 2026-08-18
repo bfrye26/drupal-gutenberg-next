@@ -22,6 +22,7 @@ This repository is intentionally separate from site-specific CGM functionality. 
 - Autosaves unsaved Drupal field changes per user and restores them after an accidental reload.
 - Adds a Gutenberg-native pre-publish flow with Drupal status, Content Moderation workflow states, Scheduler dates, URL alias, featured media and author summaries.
 - Blocks editor saves while Drupal fields are invalid; Drupal's own validation stays authoritative.
+- Adds an in-editor revision browser with author/date/log metadata, rendered side-by-side revision comparison, and a restore entry point via Drupal's revert form.
 
 ## Installation on a Drupal site today
 
